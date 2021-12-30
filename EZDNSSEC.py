@@ -1,8 +1,9 @@
 #!/bin/python3
 
-#TO-DO {"README", "DNSSEC", "SPF Node Check", "SPF DMARC DKIM MTA-STS TLS-RPT Flag Check", "Recommendations"}
+#TO-DO {"README", "DNSSEC", "SPF Node Check", "SPF DKIM MTA-STS TLS-RPT Flag Check", "Recommendations"}
+#DMARC Should Flags = v, p, rua
 
-import argparse, os, subprocess
+import argparse, os, subprocess, re
 from colorama import init, Fore, Style
 from pyfiglet import Figlet
 
@@ -30,52 +31,80 @@ dmarc_value = str(subprocess.check_output("dig +short TXT _dmarc." + args.domain
 dkim_command = "dig +short TXT " + str(args.selector) + "._domainkey." + args.domain
 dkim_value = str(subprocess.check_output("dig +short TXT " + str(args.selector) + "._domainkey." + args.domain, shell=True))
 
+def dmarc_control():
+    if re.search("v=dmarc", dmarc_value.lower()):
+        print(Fore.YELLOW + '\n[+] Your DMARC record "v" tag is clearly configured' + Style.RESET_ALL)
+    else:
+        print(Fore.RED + '\n[!] You must specify a valid DMARC record "v" tag!' + Style.RESET_ALL)
+    
+    if re.search("p=none", dmarc_value.lower()):
+        print(Fore.RED + '[!] Your DMARC record "p" tag is set to "none". You should change it!' + Style.RESET_ALL)
+    elif re.search("p=reject", dmarc_value.lower()):
+        print(Fore.YELLOW + '[+] Your DMARC record "p" tag is clearly configured' + Style.RESET_ALL)
+    elif re.search("p=quarantine", dmarc_value.lower()):
+        print(Fore.YELLOW + '[+] Your DMARC record "p" tag is clearly configured' + Style.RESET_ALL)
+    else:
+        print(Fore.RED + '[!] There is no "p" tag in your DMARC record. You must specify a valid "p" tag!' + Style.RESET_ALL)
+
+    if re.search("rua=", dmarc_value.lower()):
+        print(Fore.YELLOW + '[+] Your DMARC record "rua" tag is clearly configured' + Style.RESET_ALL)
+    else:
+        print(Fore.RED + '[!] There is no "rua" tag in your DMARC record. You must specify a valid "rua" tag!' + Style.RESET_ALL)
+
 def run_commands():
+    print(Fore.MAGENTA + "\n-----------------------------------------" + Style.RESET_ALL)
     print(Fore.BLUE + "[+] MX Records" + Style.RESET_ALL)
     if mx_value == "b''":
         print(Fore.RED + "[-] There is no MX record found!" + Style.RESET_ALL)
     else:
         os.system(mx_command)
-    
-    print(Fore.BLUE + "\n[+] MTA-STS Record" + Style.RESET_ALL)
+    print(Fore.MAGENTA + "-----------------------------------------" + Style.RESET_ALL)
+
+    print(Fore.BLUE + "[+] MTA-STS Record" + Style.RESET_ALL)
     if mta_value == "b''":
         print(Fore.RED + "[-] There is no MTA-STS record found!" + Style.RESET_ALL)
     else:
         os.system(mta_command)
+    print(Fore.MAGENTA + "-----------------------------------------" + Style.RESET_ALL)
 
-    print(Fore.BLUE + "\n[+] TLS-RPT Record" + Style.RESET_ALL)
+    print(Fore.BLUE + "[+] TLS-RPT Record" + Style.RESET_ALL)
     if tls_value == "b''":
         print(Fore.RED + "[-] There is no TLS-RPT record found!" + Style.RESET_ALL)
     else:
         os.system(tls_command)
+    print(Fore.MAGENTA + "-----------------------------------------" + Style.RESET_ALL)
 
-    print(Fore.BLUE + "\n[+] SPF Record" + Style.RESET_ALL)
+    print(Fore.BLUE + "[+] SPF Record" + Style.RESET_ALL)
     if spf_value == "b''":
         print(Fore.RED + "[-] There is no SPF record found!" + Style.RESET_ALL)
     else:
         os.system(spf_command)
+    print(Fore.MAGENTA + "-----------------------------------------" + Style.RESET_ALL)
 
     #if spf_value.find('-all') != -1:
-    #    print(Fore.CYAN + "[+] Your SPF record well-configured" + Style.RESET_ALL)
+    #    print(Fore.MAGENTA + "[+] Your SPF record well-configured" + Style.RESET_ALL)
     #elif spf_value.find('~all') != -1:
     #    print(Fore.LIGHTYELLOW_EX + "[*] Your SPF record has a softfail" + Style.RESET_ALL)
     #else:
     #    print(Fore.RED + "[!] You must create SPF record" + Style.RESET_ALL)
 
-    print(Fore.BLUE + "\n[+] DMARC Record" + Style.RESET_ALL)
+    print(Fore.BLUE + "[+] DMARC Record" + Style.RESET_ALL)
     if dmarc_value == "b''":
         print(Fore.RED + "[-] There is no DMARC record found!" + Style.RESET_ALL)
     else:
         os.system(dmarc_command)
+        dmarc_control()
+    print(Fore.MAGENTA + "-----------------------------------------" + Style.RESET_ALL)
 
     if args.selector:
-        print(Fore.BLUE + "\n[+] DKIM Record" + Style.RESET_ALL)
+        print(Fore.BLUE + "[+] DKIM Record" + Style.RESET_ALL)
         if dkim_value == "b''":
             print(Fore.RED + "[-] There is no DKIM record found!" + Style.RESET_ALL)
         else:
             os.system(dkim_command)
     else:
-        print(Fore.BLUE + "\n[+] DKIM Record" + Style.RESET_ALL)
+        print(Fore.BLUE + "[+] DKIM Record" + Style.RESET_ALL)
         print(Fore.RED + "[-] There is no selector for DKIM record!, You can specify a selector with -s" + Style.RESET_ALL)
+    print(Fore.MAGENTA + "-----------------------------------------" + Style.RESET_ALL)
 
 run_commands()
