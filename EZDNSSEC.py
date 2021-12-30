@@ -1,7 +1,6 @@
 #!/bin/python3
 
-#TO-DO {"README", "DNSSEC", "SPF Node Check", "SPF DKIM MTA-STS TLS-RPT Flag Check", "Recommendations"}
-#DMARC Should Flags = v, p, rua
+#TO-DO {"README", "DNSSEC", "SPF Node Check", "SPF MTA-STS TLS-RPT Flag Check", "Recommendations"}
 
 import argparse, os, subprocess, re
 from colorama import init, Fore, Style
@@ -50,6 +49,22 @@ def dmarc_control():
         print(Fore.YELLOW + '[+] Your DMARC record "rua" tag is clearly configured' + Style.RESET_ALL)
     else:
         print(Fore.RED + '[!] There is no "rua" tag in your DMARC record. You must specify a valid "rua" tag!' + Style.RESET_ALL)
+
+def dkim_control():
+    if re.search("v=dkim", dkim_value.lower()):
+        print(Fore.YELLOW + '\n[+] Your DKIM record "v" tag is clearly configured' + Style.RESET_ALL)
+    else:
+        print(Fore.RED + '\n[!] You must specify a valid DKIM record "v" tag!' + Style.RESET_ALL)
+    
+    if re.search("k=", dkim_value.lower()):
+        print(Fore.YELLOW + '[+] Your DKIM record "k" tag is clearly configured' + Style.RESET_ALL)
+    else:
+        print(Fore.RED + '[!] There is no "k" tag in your DKIM record. You must specify a valid "k" tag!' + Style.RESET_ALL)
+
+    if re.search("p=", dkim_value.lower()):
+        print(Fore.YELLOW + '[+] Your DKIM record "p" tag is clearly configured' + Style.RESET_ALL)
+    else:
+        print(Fore.RED + '[!] There is no "p" tag in your DKIM record. You must specify a valid "p" tag!' + Style.RESET_ALL)
 
 def run_commands():
     print(Fore.MAGENTA + "\n-----------------------------------------" + Style.RESET_ALL)
@@ -102,6 +117,7 @@ def run_commands():
             print(Fore.RED + "[-] There is no DKIM record found!" + Style.RESET_ALL)
         else:
             os.system(dkim_command)
+            dkim_control()
     else:
         print(Fore.BLUE + "[+] DKIM Record" + Style.RESET_ALL)
         print(Fore.RED + "[-] There is no selector for DKIM record!, You can specify a selector with -s" + Style.RESET_ALL)
