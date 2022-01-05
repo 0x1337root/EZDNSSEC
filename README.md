@@ -7,7 +7,7 @@ It uses the dig command for checking dns records.
 3. Make the tool executable : `chmod +x EZDNSSEC.py`
 4. Install required modules : `pip3 install -r requirements.txt`
 # Note
-* Install figlet font "epic" if it does not exists on your system : `wget http://www.figlet.org/fonts/epic.flf -O /usr/share/figlet/epic.flf`
+* Install figlet font "epic" if it does not exists on your system :<br> `wget http://www.figlet.org/fonts/epic.flf -O /usr/share/figlet/epic.flf`
 # Usage
 To get a list of all options and learn how to use this app, enter the following command :<br>
 `./EZDNSSEC.py -h`<br><br>
