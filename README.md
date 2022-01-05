@@ -3,7 +3,7 @@
 It uses the dig command for checking dns records.
 # Installation
 1. Clone the repository to your machine : `git clone https://github.com/0x1337root/EZDNSSEC.git`
-2. Go to the tools folder : `cd EZDNSSEC`
+2. Go to the folder : `cd EZDNSSEC`
 3. Make the tool executable : `chmod 777 EZDNSSEC.py`
 4. Install required modules : `pip3 install -r requirements.txt`
 # Note
