@@ -4,7 +4,7 @@ It uses the dig command for checking dns records.
 # Installation
 1. Clone the repository to your machine : `git clone https://github.com/0x1337root/EZDNSSEC.git`
 2. Go to the folder : `cd EZDNSSEC`
-3. Make the tool executable : `chmod 777 EZDNSSEC.py`
+3. Make the tool executable : `chmod +x EZDNSSEC.py`
 4. Install required modules : `pip3 install -r requirements.txt`
 # Note
 * Install figlet font "epic" if it does not exists on your system : `wget http://www.figlet.org/fonts/epic.flf -O /usr/share/figlet/epic.flf`
