@@ -1,6 +1,6 @@
 #!/bin/python3
 
-#TO-DO {"README", "DNSSEC", "SPF Node Check", "SPF MTA-STS TLS-RPT Flag Check", "Recommendations"}
+#TO-DO {"DNSSEC", "SPF Node Check", "SPF MTA-STS TLS-RPT Flag Check", "STARTTLS Check", "Mail Spoofing Check", "SMTP Relay Check"}
 
 import argparse, os, subprocess, re
 from colorama import init, Fore, Style
