@@ -1,6 +1,6 @@
 #!/bin/python3
 
-#TO-DO {"SPF Node Check", "SPF MTA-STS TLS-RPT Flag Check", "STARTTLS Check", "Mail Spoofing Check", "SMTP Relay Check"}
+#TO-DO {"SPF Node Check", "STARTTLS Check", "Mail Spoofing Check", "SMTP Relay Check"}
 
 import argparse, os, subprocess, re
 from colorama import init, Fore, Style
@@ -32,39 +32,61 @@ dmarc_value = str(subprocess.check_output("dig +short TXT _dmarc." + args.domain
 dkim_command = "dig +short TXT " + str(args.selector) + "._domainkey." + args.domain
 dkim_value = str(subprocess.check_output("dig +short TXT " + str(args.selector) + "._domainkey." + args.domain, shell=True))
 
+def mta_control():
+    if re.search("v=sts", mta_value.lower()):
+        print(Fore.GREEN + '\n[+] Your MTA-STS record "v" tag is clearly configured' + Style.RESET_ALL)
+    else:
+        print(Fore.RED + '\n[!] You must specify a valid MTA-STS record "v" tag!' + Style.RESET_ALL)
+
+    if re.search("id=", mta_value.lower()):
+        print(Fore.GREEN + '[+] Your MTA-STS record "id" tag is clearly configured' + Style.RESET_ALL)
+    else:
+        print(Fore.RED + '[!] You must specify a valid MTA-STS record "id" tag!' + Style.RESET_ALL)
+
+def tls_control():
+    if re.search("v=tlsrpt", tls_value.lower()):
+        print(Fore.GREEN + '\n[+] Your TLS-RPT record "v" tag is clearly configured' + Style.RESET_ALL)
+    else:
+        print(Fore.RED + '\n[!] You must specify a valid TLS-RPT record "v" tag!' + Style.RESET_ALL)
+
+    if re.search("rua=", tls_value.lower()):
+        print(Fore.GREEN + '[+] Your TLS-RPT record "rua" tag is clearly configured' + Style.RESET_ALL)
+    else:
+        print(Fore.RED + '[!] [!] There is no "rua" tag in your TLS-RPT record. You must specify a valid "rua" tag!' + Style.RESET_ALL)
+
 def dmarc_control():
     if re.search("v=dmarc", dmarc_value.lower()):
-        print(Fore.YELLOW + '\n[+] Your DMARC record "v" tag is clearly configured' + Style.RESET_ALL)
+        print(Fore.GREEN + '\n[+] Your DMARC record "v" tag is clearly configured' + Style.RESET_ALL)
     else:
         print(Fore.RED + '\n[!] You must specify a valid DMARC record "v" tag!' + Style.RESET_ALL)
     
     if re.search("p=none", dmarc_value.lower()):
         print(Fore.RED + '[!] Your DMARC record "p" tag is set to "none". You should change it!' + Style.RESET_ALL)
     elif re.search("p=reject", dmarc_value.lower()):
-        print(Fore.YELLOW + '[+] Your DMARC record "p" tag is clearly configured' + Style.RESET_ALL)
+        print(Fore.GREEN + '[+] Your DMARC record "p" tag is clearly configured' + Style.RESET_ALL)
     elif re.search("p=quarantine", dmarc_value.lower()):
-        print(Fore.YELLOW + '[+] Your DMARC record "p" tag is clearly configured' + Style.RESET_ALL)
+        print(Fore.GREEN + '[+] Your DMARC record "p" tag is clearly configured' + Style.RESET_ALL)
     else:
         print(Fore.RED + '[!] There is no "p" tag in your DMARC record. You must specify a valid "p" tag!' + Style.RESET_ALL)
 
     if re.search("rua=", dmarc_value.lower()):
-        print(Fore.YELLOW + '[+] Your DMARC record "rua" tag is clearly configured' + Style.RESET_ALL)
+        print(Fore.GREEN + '[+] Your DMARC record "rua" tag is clearly configured' + Style.RESET_ALL)
     else:
         print(Fore.RED + '[!] There is no "rua" tag in your DMARC record. You must specify a valid "rua" tag!' + Style.RESET_ALL)
 
 def dkim_control():
     if re.search("v=dkim", dkim_value.lower()):
-        print(Fore.YELLOW + '\n[+] Your DKIM record "v" tag is clearly configured' + Style.RESET_ALL)
+        print(Fore.GREEN + '\n[+] Your DKIM record "v" tag is clearly configured' + Style.RESET_ALL)
     else:
         print(Fore.RED + '\n[!] You must specify a valid DKIM record "v" tag!' + Style.RESET_ALL)
     
     if re.search("k=", dkim_value.lower()):
-        print(Fore.YELLOW + '[+] Your DKIM record "k" tag is clearly configured' + Style.RESET_ALL)
+        print(Fore.GREEN + '[+] Your DKIM record "k" tag is clearly configured' + Style.RESET_ALL)
     else:
         print(Fore.RED + '[!] There is no "k" tag in your DKIM record. You must specify a valid "k" tag!' + Style.RESET_ALL)
 
     if re.search("p=", dkim_value.lower()):
-        print(Fore.YELLOW + '[+] Your DKIM record "p" tag is clearly configured' + Style.RESET_ALL)
+        print(Fore.GREEN + '[+] Your DKIM record "p" tag is clearly configured' + Style.RESET_ALL)
     else:
         print(Fore.RED + '[!] There is no "p" tag in your DKIM record. You must specify a valid "p" tag!' + Style.RESET_ALL)
 
@@ -82,6 +104,7 @@ def run_commands():
         print(Fore.RED + "[-] There is no MTA-STS record found!" + Style.RESET_ALL)
     else:
         os.system(mta_command)
+        mta_control()
     print(Fore.MAGENTA + "-----------------------------------------" + Style.RESET_ALL)
 
     print(Fore.BLUE + "[+] TLS-RPT Record" + Style.RESET_ALL)
@@ -89,6 +112,7 @@ def run_commands():
         print(Fore.RED + "[-] There is no TLS-RPT record found!" + Style.RESET_ALL)
     else:
         os.system(tls_command)
+        tls_control()
     print(Fore.MAGENTA + "-----------------------------------------" + Style.RESET_ALL)
 
     print(Fore.BLUE + "[+] SPF Record" + Style.RESET_ALL)
@@ -101,7 +125,7 @@ def run_commands():
     #if spf_value.find('-all') != -1:
     #    print(Fore.MAGENTA + "[+] Your SPF record well-configured" + Style.RESET_ALL)
     #elif spf_value.find('~all') != -1:
-    #    print(Fore.LIGHTYELLOW_EX + "[*] Your SPF record has a softfail" + Style.RESET_ALL)
+    #    print(Fore.MAGENTA + "[*] Your SPF record has a softfail" + Style.RESET_ALL)
     #else:
     #    print(Fore.RED + "[!] You must create SPF record" + Style.RESET_ALL)
 
@@ -130,7 +154,7 @@ def run_commands():
         print(Fore.RED + "[-] DNSSEC is not enabled!" + Style.RESET_ALL)
     else:
         os.system(dnssec_command)
-        print(Fore.YELLOW + '\n[+] Your DNSSEC is enabled' + Style.RESET_ALL)
+        print(Fore.GREEN + '\n[+] Your DNSSEC is enabled' + Style.RESET_ALL)
     print(Fore.MAGENTA + "-----------------------------------------" + Style.RESET_ALL)
 
 run_commands()
