@@ -1,6 +1,6 @@
 #!/bin/python3
 
-#TO-DO {"DNSSEC", "SPF Node Check", "SPF MTA-STS TLS-RPT Flag Check", "STARTTLS Check", "Mail Spoofing Check", "SMTP Relay Check"}
+#TO-DO {"SPF Node Check", "SPF MTA-STS TLS-RPT Flag Check", "STARTTLS Check", "Mail Spoofing Check", "SMTP Relay Check"}
 
 import argparse, os, subprocess, re
 from colorama import init, Fore, Style
@@ -17,6 +17,8 @@ custom_fig = Figlet(font='epic')
 print()
 print(Fore.RED + Style.BRIGHT + custom_fig.renderText('EZDNSSEC') + Style.RESET_ALL)
 
+dnssec_command = "dig +short DS " + args.domain
+dnssec_value = str(subprocess.check_output("dig +short DS " + args.domain, shell=True))
 mx_command = "dig +short MX " + args.domain + " | sort --numeric-sort"
 mx_value = str(subprocess.check_output("dig +short MX " + args.domain + " | sort --numeric-sort", shell=True))
 mta_command = "dig +short TXT _mta-sts." + args.domain
@@ -66,7 +68,7 @@ def dkim_control():
     else:
         print(Fore.RED + '[!] There is no "p" tag in your DKIM record. You must specify a valid "p" tag!' + Style.RESET_ALL)
 
-def run_commands():
+def run_commands():    
     print(Fore.MAGENTA + "\n-----------------------------------------" + Style.RESET_ALL)
     print(Fore.BLUE + "[+] MX Records" + Style.RESET_ALL)
     if mx_value == "b''":
@@ -121,6 +123,14 @@ def run_commands():
     else:
         print(Fore.BLUE + "[+] DKIM Record" + Style.RESET_ALL)
         print(Fore.RED + "[-] There is no selector for DKIM record!, You can specify a selector with -s" + Style.RESET_ALL)
+    print(Fore.MAGENTA + "-----------------------------------------" + Style.RESET_ALL)
+
+    print(Fore.BLUE + "[+] DNSSEC Check" + Style.RESET_ALL)
+    if dnssec_value == "b''":
+        print(Fore.RED + "[-] DNSSEC is not enabled!" + Style.RESET_ALL)
+    else:
+        os.system(dnssec_command)
+        print(Fore.YELLOW + '\n[+] Your DNSSEC is enabled' + Style.RESET_ALL)
     print(Fore.MAGENTA + "-----------------------------------------" + Style.RESET_ALL)
 
 run_commands()
