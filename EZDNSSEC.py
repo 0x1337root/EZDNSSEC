@@ -1,6 +1,6 @@
 #!/bin/python3
 
-#TO-DO {"SPF Node Check", "STARTTLS Check", "Mail Spoofing Check", "SMTP Relay Check"}
+#TO-DO {"STARTTLS Check", "Mail Spoofing Check", "SMTP Relay Check"}
 
 import argparse, os, subprocess, re
 from colorama import init, Fore, Style
@@ -17,8 +17,6 @@ custom_fig = Figlet(font='epic')
 print()
 print(Fore.RED + Style.BRIGHT + custom_fig.renderText('EZDNSSEC') + Style.RESET_ALL)
 
-dnssec_command = "dig +short DS " + args.domain
-dnssec_value = str(subprocess.check_output("dig +short DS " + args.domain, shell=True))
 mx_command = "dig +short MX " + args.domain + " | sort --numeric-sort"
 mx_value = str(subprocess.check_output("dig +short MX " + args.domain + " | sort --numeric-sort", shell=True))
 mta_command = "dig +short TXT _mta-sts." + args.domain
@@ -53,6 +51,20 @@ def tls_control():
         print(Fore.GREEN + '[+] Your TLS-RPT record "rua" tag is clearly configured' + Style.RESET_ALL)
     else:
         print(Fore.RED + '[!] [!] There is no "rua" tag in your TLS-RPT record. You must specify a valid "rua" tag!' + Style.RESET_ALL)
+
+def spf_control():
+    if spf_value.find('-all') != -1:
+        print(Fore.GREEN + "\n[+] Your SPF record well-configured" + Style.RESET_ALL)
+    elif spf_value.find('~all') != -1:
+        print(Fore.YELLOW + "\n[*] Your SPF record has a softfail, you should check sub nodes for SPF" + Style.RESET_ALL)
+    else:
+        print(Fore.RED + "\n[!] You must create SPF record or check sub nodes for SPF" + Style.RESET_ALL)
+    
+    #if re.search("redirect=", spf_value):
+    #    a = re.findall(r"\bredirect=\w.+", spf_value)
+    #    b = a[0]
+    #    c = re.split("=", b)
+    #    d = c[1]
 
 def dmarc_control():
     if re.search("v=dmarc", dmarc_value.lower()):
@@ -91,7 +103,7 @@ def dkim_control():
         print(Fore.RED + '[!] There is no "p" tag in your DKIM record. You must specify a valid "p" tag!' + Style.RESET_ALL)
 
 def run_commands():    
-    print(Fore.MAGENTA + "\n-----------------------------------------" + Style.RESET_ALL)
+    print(Fore.MAGENTA + "-----------------------------------------" + Style.RESET_ALL)
     print(Fore.BLUE + "[+] MX Records" + Style.RESET_ALL)
     if mx_value == "b''":
         print(Fore.RED + "[-] There is no MX record found!" + Style.RESET_ALL)
@@ -120,14 +132,8 @@ def run_commands():
         print(Fore.RED + "[-] There is no SPF record found!" + Style.RESET_ALL)
     else:
         os.system(spf_command)
+        spf_control()
     print(Fore.MAGENTA + "-----------------------------------------" + Style.RESET_ALL)
-
-    #if spf_value.find('-all') != -1:
-    #    print(Fore.MAGENTA + "[+] Your SPF record well-configured" + Style.RESET_ALL)
-    #elif spf_value.find('~all') != -1:
-    #    print(Fore.MAGENTA + "[*] Your SPF record has a softfail" + Style.RESET_ALL)
-    #else:
-    #    print(Fore.RED + "[!] You must create SPF record" + Style.RESET_ALL)
 
     print(Fore.BLUE + "[+] DMARC Record" + Style.RESET_ALL)
     if dmarc_value == "b''":
@@ -150,6 +156,9 @@ def run_commands():
     print(Fore.MAGENTA + "-----------------------------------------" + Style.RESET_ALL)
 
     print(Fore.BLUE + "[+] DNSSEC Check" + Style.RESET_ALL)
+    dnssec_command = "dig +short DS " + args.domain
+    dnssec_value = str(subprocess.check_output("dig +short DS " + args.domain, shell=True))
+
     if dnssec_value == "b''":
         print(Fore.RED + "[-] DNSSEC is not enabled!" + Style.RESET_ALL)
     else:
