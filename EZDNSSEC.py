@@ -1,8 +1,8 @@
 #!/bin/python3
 
-#TO-DO {"STARTTLS Check", "Mail Spoofing Check", "SMTP Relay Check"}
+#TO-DO {"Mail Spoofing Check", "SMTP Relay Check"}
 
-import argparse, os, subprocess, re
+import argparse, os, subprocess, re, smtplib
 from colorama import init, Fore, Style
 from pyfiglet import Figlet
 
@@ -17,18 +17,29 @@ custom_fig = Figlet(font='epic')
 print()
 print(Fore.RED + Style.BRIGHT + custom_fig.renderText('EZDNSSEC') + Style.RESET_ALL)
 
-mx_command = "dig +short MX " + args.domain + " | sort --numeric-sort"
-mx_value = str(subprocess.check_output("dig +short MX " + args.domain + " | sort --numeric-sort", shell=True))
-mta_command = "dig +short TXT _mta-sts." + args.domain
-mta_value = str(subprocess.check_output("dig +short TXT _mta-sts." + args.domain, shell=True))
-tls_command = "dig +short TXT _smtp._tls." + args.domain
-tls_value = str(subprocess.check_output("dig +short TXT _smtp._tls." + args.domain, shell=True))
-spf_command = "dig +short TXT " + args.domain + " | grep -i 'v=spf'"
-spf_value = str(subprocess.check_output("dig +short TXT " + args.domain + " | grep -i 'v=spf'", shell=True))
-dmarc_command = "dig +short TXT _dmarc." + args.domain
-dmarc_value = str(subprocess.check_output("dig +short TXT _dmarc." + args.domain, shell=True))
-dkim_command = "dig +short TXT " + str(args.selector) + "._domainkey." + args.domain
-dkim_value = str(subprocess.check_output("dig +short TXT " + str(args.selector) + "._domainkey." + args.domain, shell=True))
+mx_value = str(subprocess.getoutput("dig +short MX " + args.domain + " | sort --numeric-sort"))
+mx_list = re.findall(r"\S+\w+\.com\b", mx_value)
+starttls_list = []
+mta_value = str(subprocess.getoutput("dig +short TXT _mta-sts." + args.domain))
+tls_value = str(subprocess.getoutput("dig +short TXT _smtp._tls." + args.domain))
+spf_value = str(subprocess.getoutput("dig +short TXT " + args.domain + " | grep -i 'v=spf'"))
+dmarc_value = str(subprocess.getoutput("dig +short TXT _dmarc." + args.domain))
+dkim_value = str(subprocess.getoutput("dig +short TXT " + str(args.selector) + "._domainkey." + args.domain))
+
+def starttls_control():
+    count = 0
+    for i in mx_list:
+        count += 1
+        server = smtplib.SMTP(i, 25)
+        starttls_list.append(str(server.starttls()))
+        
+    for i in range(count):
+        if re.search("220", starttls_list[i]):
+            starttls_list[i] = True
+            print(mx_list[i] + Fore.GREEN + "          [+] STARTTLS supported" + Style.RESET_ALL)
+        else:
+            starttls_list[i] = False
+            print(mx_list[i] + Fore.RED + "          [-] STARTTLS does not supported!" + Style.RESET_ALL)
 
 def mta_control():
     if re.search("v=sts", mta_value.lower()):
@@ -108,14 +119,14 @@ def run_commands():
     if mx_value == "b''":
         print(Fore.RED + "[-] There is no MX record found!" + Style.RESET_ALL)
     else:
-        os.system(mx_command)
+        starttls_control()
     print(Fore.MAGENTA + "-----------------------------------------" + Style.RESET_ALL)
 
     print(Fore.BLUE + "[+] MTA-STS Record" + Style.RESET_ALL)
     if mta_value == "b''":
         print(Fore.RED + "[-] There is no MTA-STS record found!" + Style.RESET_ALL)
     else:
-        os.system(mta_command)
+        print(mta_value)
         mta_control()
     print(Fore.MAGENTA + "-----------------------------------------" + Style.RESET_ALL)
 
@@ -123,7 +134,7 @@ def run_commands():
     if tls_value == "b''":
         print(Fore.RED + "[-] There is no TLS-RPT record found!" + Style.RESET_ALL)
     else:
-        os.system(tls_command)
+        print(tls_value)
         tls_control()
     print(Fore.MAGENTA + "-----------------------------------------" + Style.RESET_ALL)
 
@@ -131,7 +142,7 @@ def run_commands():
     if spf_value == "b''":
         print(Fore.RED + "[-] There is no SPF record found!" + Style.RESET_ALL)
     else:
-        os.system(spf_command)
+        print(spf_value)
         spf_control()
     print(Fore.MAGENTA + "-----------------------------------------" + Style.RESET_ALL)
 
@@ -139,7 +150,7 @@ def run_commands():
     if dmarc_value == "b''":
         print(Fore.RED + "[-] There is no DMARC record found!" + Style.RESET_ALL)
     else:
-        os.system(dmarc_command)
+        print(dmarc_value)
         dmarc_control()
     print(Fore.MAGENTA + "-----------------------------------------" + Style.RESET_ALL)
 
@@ -148,7 +159,7 @@ def run_commands():
         if dkim_value == "b''":
             print(Fore.RED + "[-] There is no DKIM record found!" + Style.RESET_ALL)
         else:
-            os.system(dkim_command)
+            print(dkim_value)
             dkim_control()
     else:
         print(Fore.BLUE + "[+] DKIM Record" + Style.RESET_ALL)
