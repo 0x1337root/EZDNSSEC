@@ -1,7 +1,5 @@
 #!/bin/python3
 
-#TO-DO {"Mail Spoofing Check", "SMTP Relay Check"}
-
 import argparse, subprocess, re, smtplib
 from colorama import init, Fore, Style
 from pyfiglet import Figlet
@@ -18,7 +16,7 @@ print()
 print(Fore.RED + Style.BRIGHT + custom_fig.renderText('EZDNSSEC') + Style.RESET_ALL)
 
 mx_value = str(subprocess.getoutput("dig +short MX " + args.domain + " | sort --numeric-sort"))
-mx_list = re.findall(r"\S+\w+\.com\b", mx_value)
+mx_list = re.findall(r"\S+\w+\.\w\w\w\b", mx_value)
 starttls_list = []
 mta_value = str(subprocess.getoutput("dig +short TXT _mta-sts." + args.domain))
 tls_value = str(subprocess.getoutput("dig +short TXT _smtp._tls." + args.domain))
@@ -70,27 +68,23 @@ def spf_control():
         print(Fore.YELLOW + "\n[*] Your SPF record has a softfail, you should check sub nodes for SPF" + Style.RESET_ALL)
     else:
         print(Fore.RED + "\n[!] You must create SPF record or check sub nodes for SPF" + Style.RESET_ALL)
-    
-    #if re.search("redirect=", spf_value):
-    #    a = re.findall(r"\bredirect=\w.+", spf_value)
-    #    b = a[0]
-    #    c = re.split("=", b)
-    #    d = c[1]
 
 def dmarc_control():
+    if re.search("p=none", dmarc_value.lower()):
+        print(Fore.RED + '\n[!] Your email is vulnerable to email spoofing!' + Style.RESET_ALL)
+        print(Fore.RED + '[!] Your DMARC record "p" tag is set to "none". Spoofed emails can send to your inbox. You should change it!' + Style.RESET_ALL)
+    elif re.search("p=reject", dmarc_value.lower()):
+        print(Fore.GREEN + '\n[+] Your DMARC record "p" tag is clearly configured' + Style.RESET_ALL)
+    elif re.search("p=quarantine", dmarc_value.lower()):
+        print(Fore.YELLOW + '\n[*] Your DMARC record "p" tag is set to "quarantine". Spoofed emails can send to your spam box!' + Style.RESET_ALL)
+    else:
+        print(Fore.RED + '\n[!] Your email is vulnerable to email spoofing!' + Style.RESET_ALL)
+        print(Fore.RED + '[!] There is no "p" tag in your DMARC record. Spoofed emails can send to your inbox. You must specify a valid "p" tag!' + Style.RESET_ALL)
+
     if re.search("v=dmarc", dmarc_value.lower()):
-        print(Fore.GREEN + '\n[+] Your DMARC record "v" tag is clearly configured' + Style.RESET_ALL)
+        print(Fore.GREEN + '[+] Your DMARC record "v" tag is clearly configured' + Style.RESET_ALL)
     else:
         print(Fore.RED + '[!] You must specify a valid DMARC record "v" tag!' + Style.RESET_ALL)
-    
-    if re.search("p=none", dmarc_value.lower()):
-        print(Fore.RED + '[!] Your DMARC record "p" tag is set to "none". You should change it!' + Style.RESET_ALL)
-    elif re.search("p=reject", dmarc_value.lower()):
-        print(Fore.GREEN + '[+] Your DMARC record "p" tag is clearly configured' + Style.RESET_ALL)
-    elif re.search("p=quarantine", dmarc_value.lower()):
-        print(Fore.GREEN + '[+] Your DMARC record "p" tag is clearly configured' + Style.RESET_ALL)
-    else:
-        print(Fore.RED + '[!] There is no "p" tag in your DMARC record. You must specify a valid "p" tag!' + Style.RESET_ALL)
 
     if re.search("rua=", dmarc_value.lower()):
         print(Fore.GREEN + '[+] Your DMARC record "rua" tag is clearly configured' + Style.RESET_ALL)
