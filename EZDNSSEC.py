@@ -72,14 +72,14 @@ def spf_control():
 def dmarc_control():
     if re.search("p=none", dmarc_value.lower()):
         print(Fore.RED + '\n[!] Your email is vulnerable to email spoofing!' + Style.RESET_ALL)
-        print(Fore.RED + '[!] Your DMARC record "p" tag is set to "none". Spoofed emails can send to your inbox. You should change it!' + Style.RESET_ALL)
+        print(Fore.RED + '[!] Your DMARC record "p" tag is set to "none". Spoofed emails can be send to your inbox. You should change it!' + Style.RESET_ALL)
     elif re.search("p=reject", dmarc_value.lower()):
         print(Fore.GREEN + '\n[+] Your DMARC record "p" tag is clearly configured' + Style.RESET_ALL)
     elif re.search("p=quarantine", dmarc_value.lower()):
-        print(Fore.YELLOW + '\n[*] Your DMARC record "p" tag is set to "quarantine". Spoofed emails can send to your spam box!' + Style.RESET_ALL)
+        print(Fore.YELLOW + '\n[*] Your DMARC record "p" tag is set to "quarantine". Spoofed emails can be send to your spam box!' + Style.RESET_ALL)
     else:
         print(Fore.RED + '\n[!] Your email is vulnerable to email spoofing!' + Style.RESET_ALL)
-        print(Fore.RED + '[!] There is no "p" tag in your DMARC record. Spoofed emails can send to your inbox. You must specify a valid "p" tag!' + Style.RESET_ALL)
+        print(Fore.RED + '[!] There is no "p" tag in your DMARC record. Spoofed emails can be send to your inbox. You must specify a valid "p" tag!' + Style.RESET_ALL)
 
     if re.search("v=dmarc", dmarc_value.lower()):
         print(Fore.GREEN + '[+] Your DMARC record "v" tag is clearly configured' + Style.RESET_ALL)
@@ -157,7 +157,7 @@ def run_commands():
             dkim_control()
     else:
         print(Fore.BLUE + "[+] DKIM Record" + Style.RESET_ALL)
-        print(Fore.RED + "\n[!] There is no selector for DKIM record!, You can specify a selector with -s" + Style.RESET_ALL)
+        print(Fore.RED + "\n[!] There is no selector for DKIM record!. You can specify a selector with -s" + Style.RESET_ALL)
     print(Fore.MAGENTA + "-----------------------------------------" + Style.RESET_ALL)
 
     print(Fore.BLUE + "[+] DNSSEC Check" + Style.RESET_ALL)
