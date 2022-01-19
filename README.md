@@ -1,6 +1,14 @@
 # EZDNSSEC
 **EZDNSSEC** is a mail security tool. 
-It uses the dig command for checking dns records.
+* Checking MX servers and list them by priority
+* Checking STARTTLS
+* Checking SMTP Open Relay for all MX servers
+* Checking MTA-STS record
+* Checking TLS-RPT record
+* Checking SPF record
+* Checking DMARC record
+* Checking DKIM record
+* Checking DNSSEC 
 # Installation
 1. Clone the repository to your machine : `git clone https://github.com/0x1337root/EZDNSSEC.git`
 2. Go to the folder : `cd EZDNSSEC`
