@@ -24,6 +24,37 @@ spf_value = str(subprocess.getoutput("dig +short TXT " + args.domain + " | grep 
 dmarc_value = str(subprocess.getoutput("dig +short TXT _dmarc." + args.domain))
 dkim_value = str(subprocess.getoutput("dig +short TXT " + str(args.selector) + "._domainkey." + args.domain))
 
+def smtp_open_relay_control():
+    sender = ["ezdnssec@yopmail.com", "ezdnssec@yopmail.com", "ezdnssec@" + args.domain]
+    receiver = ["ezndssec@yopmail.com", "ezdnssec@" + args.domain, "ezdnssec@" + args.domain]
+
+    for i in range(0, len(mx_list), 1):
+        mx_server = mx_list[i]
+        for i in range(0, 3, 1):
+            message = """From: From Person <""" + sender[i] + """>
+            To: To Person <""" + receiver[i] + """>
+            Subject: SMTP open relay test
+
+            This is a test e-mail message.
+            """
+            
+            try:
+                smtpObj = smtplib.SMTP(str(mx_server), 25)
+                smtpObj.sendmail(sender[i], receiver[i], message)
+                if i == 0:
+                    print(mx_server + Fore.RED + "      [!] This mail server is vulnerable to SMTP Open Relay! (from external source to external destination)" + Style.RESET_ALL)
+                elif i == 1:
+                    print(mx_server + Fore.RED + "      [!] This mail server is vulnerable to SMTP Open Relay! (from external source to internal destination)" + Style.RESET_ALL)
+                else:
+                    print(mx_server + Fore.RED + "      [!] This mail server is vulnerable to SMTP Open Relay! (from internal source to internal destination)" + Style.RESET_ALL)
+            except:
+                if i == 0:
+                    print(mx_server + Fore.GREEN + "      [+] This mail server is not vulnerable to SMTP Open Relay! (from external source to external destination)" + Style.RESET_ALL)
+                elif i == 1:
+                    print(mx_server + Fore.GREEN + "      [+] This mail server is not vulnerable to SMTP Open Relay! (from external source to internal destination)" + Style.RESET_ALL)
+                else:
+                    print(mx_server + Fore.GREEN + "      [+] This mail server is not vulnerable to SMTP Open Relay! (from internal source to internal destination)" + Style.RESET_ALL)
+
 def starttls_control():
     count = 0
     for i in mx_list:
@@ -114,6 +145,10 @@ def run_commands():
         print(Fore.RED + "[!] There is no MX record found!" + Style.RESET_ALL)
     else:
         starttls_control()
+    print(Fore.MAGENTA + "-----------------------------------------" + Style.RESET_ALL)
+
+    print(Fore.BLUE + "[+] SMTP Open Relay Test" + Style.RESET_ALL)
+    smtp_open_relay_control()
     print(Fore.MAGENTA + "-----------------------------------------" + Style.RESET_ALL)
 
     print(Fore.BLUE + "[+] MTA-STS Record" + Style.RESET_ALL)
