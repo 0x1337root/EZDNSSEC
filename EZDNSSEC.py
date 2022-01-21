@@ -57,19 +57,21 @@ def smtp_open_relay_control():
 
 def starttls_control():
     count = 0
-    for i in mx_list:
-        count += 1
-        server = smtplib.SMTP(i, 25)
-        starttls_list.append(str(server.starttls()))
+    try:
+        for i in mx_list:
+            count += 1
+            server = smtplib.SMTP(i, 25)
+            starttls_list.append(str(server.starttls()))
         
-    for i in range(count):
-        if re.search("220", starttls_list[i]):
-            starttls_list[i] = True
-            print(mx_list[i] + Fore.GREEN + "          [+] STARTTLS supported" + Style.RESET_ALL)
-        else:
-            starttls_list[i] = False
+        for i in range(count):
+            if re.search("220", starttls_list[i]):
+                print(mx_list[i] + Fore.GREEN + "          [+] STARTTLS supported" + Style.RESET_ALL)
+            else:
+                print(mx_list[i] + Fore.RED + "          [!] STARTTLS does not supported!" + Style.RESET_ALL)
+    except:
+        for i in range(count):
             print(mx_list[i] + Fore.RED + "          [!] STARTTLS does not supported!" + Style.RESET_ALL)
-
+        
 def mta_control():
     if re.search("v=sts", mta_value.lower()):
         print(Fore.GREEN + '\n[+] Your MTA-STS record "v" tag is clearly configured' + Style.RESET_ALL)
@@ -196,13 +198,16 @@ def run_commands():
     print(Fore.MAGENTA + "-----------------------------------------" + Style.RESET_ALL)
 
     print(Fore.BLUE + "[+] DNSSEC Check" + Style.RESET_ALL)
-    dnssec_value = str(subprocess.check_output("dig +short DS " + args.domain, shell=True))
+    try:
+        dnssec_value = str(subprocess.check_output("dig +short DS " + args.domain, shell=True))
 
-    if dnssec_value == "b''":
-        print(Fore.RED + "\n[!] DNSSEC is not enabled!" + Style.RESET_ALL)
-    else:
-        print(dnssec_value, end=None)
-        print(Fore.GREEN + '\n[+] Your DNSSEC is enabled' + Style.RESET_ALL)
+        if dnssec_value == "b''":
+            print(Fore.RED + "\n[!] DNSSEC is not enabled!" + Style.RESET_ALL)
+        else:
+            print(dnssec_value, end=None)
+            print(Fore.GREEN + '\n[+] Your DNSSEC is enabled' + Style.RESET_ALL)
+    except:
+        print(Fore.YELLOW + "[!] Network Unreachable!" + Style.RESET_ALL)
     print(Fore.MAGENTA + "-----------------------------------------" + Style.RESET_ALL)
 
 run_commands()
