@@ -6,7 +6,7 @@ xmlns:xsl="http://www.w3.org/1999/XSL/Transform">
 <body>
 <h1 align="center">DMARC REPORT</h1>
 
-<table border="3" align="center" >
+<table border="4" align="center" cellpadding="10">
 <tr>
 	<th>Organization Name</th>
 	<th>Email</th>
@@ -27,7 +27,7 @@ xmlns:xsl="http://www.w3.org/1999/XSL/Transform">
 
 <br><br></br></br>
 
-<table border="3" align="center" >
+<table border="4" align="center" cellpadding="10">
 <tr>
 	<th>Policy Published Domain</th>
 	<th>ADKIM</th>
@@ -50,7 +50,7 @@ xmlns:xsl="http://www.w3.org/1999/XSL/Transform">
 
 <br><br></br></br>
 
-<table border="3" align="center" >
+<table border="4" align="center" cellpadding="10">
 <tr>
 	<th>Source IP</th>
 	<th>Count</th>
