@@ -3,26 +3,30 @@
 import argparse, subprocess, re, smtplib
 from colorama import init, Fore, Style
 from pyfiglet import Figlet
+import lxml.html
+from lxml import etree
 
 init()
 
 parser = argparse.ArgumentParser(description="Write the domain")
-parser.add_argument('domain', type=str, help="Domain to control")
+parser.add_argument('--domain', dest="domain", type=str, help="Domain to control")
 parser.add_argument('-s', dest="selector", type=str, help="DKIM selector")
+parser.add_argument('--convert', dest="convert", type=str, help='Convert XML to HTML')
 args = parser.parse_args()
 
 custom_fig = Figlet(font='epic')
 print()
 print(Fore.RED + Style.BRIGHT + custom_fig.renderText('EZDNSSEC') + Style.RESET_ALL)
 
-mx_value = str(subprocess.getoutput("dig +short MX " + args.domain + " | sort --numeric-sort"))
-mx_list = re.findall(r"\S+\w+\.\w\w\w\b", mx_value)
-starttls_list = []
-mta_value = str(subprocess.getoutput("dig +short TXT _mta-sts." + args.domain))
-tls_value = str(subprocess.getoutput("dig +short TXT _smtp._tls." + args.domain))
-spf_value = str(subprocess.getoutput("dig +short TXT " + args.domain + " | grep -i 'v=spf'"))
-dmarc_value = str(subprocess.getoutput("dig +short TXT _dmarc." + args.domain))
-dkim_value = str(subprocess.getoutput("dig +short TXT " + str(args.selector) + "._domainkey." + args.domain))
+if args.domain:
+    mx_value = str(subprocess.getoutput("dig +short MX " + args.domain + " | sort --numeric-sort"))
+    mx_list = re.findall(r"\S+\w+\.\w\w\w\b", mx_value)
+    starttls_list = []
+    mta_value = str(subprocess.getoutput("dig +short TXT _mta-sts." + args.domain))
+    tls_value = str(subprocess.getoutput("dig +short TXT _smtp._tls." + args.domain))
+    spf_value = str(subprocess.getoutput("dig +short TXT " + args.domain + " | grep -i 'v=spf'"))
+    dmarc_value = str(subprocess.getoutput("dig +short TXT _dmarc." + args.domain))
+    dkim_value = str(subprocess.getoutput("dig +short TXT " + str(args.selector) + "._domainkey." + args.domain))
 
 def smtp_open_relay_control():
     sender = ["ezdnssec@yopmail.com", "ezdnssec@yopmail.com", "ezdnssec@" + args.domain]
@@ -140,6 +144,16 @@ def dkim_control():
     else:
         print(Fore.RED + '[!] There is no "p" tag in your DKIM record. You must specify a valid "p" tag!' + Style.RESET_ALL)
 
+def convert():
+    xslt_doc = etree.parse("./test.xslt")
+    xslt_transformer = etree.XSLT(xslt_doc)
+ 
+    source_doc = etree.parse(args.convert)
+    output_doc = xslt_transformer(source_doc)
+ 
+    print(str(output_doc))
+    output_doc.write("report.html", pretty_print=True)
+
 def run_commands():    
     print(Fore.MAGENTA + "-----------------------------------------" + Style.RESET_ALL)
     print(Fore.BLUE + "[+] MX Records" + Style.RESET_ALL)
@@ -210,4 +224,8 @@ def run_commands():
         print(Fore.YELLOW + "[!] Network Unreachable!" + Style.RESET_ALL)
     print(Fore.MAGENTA + "-----------------------------------------" + Style.RESET_ALL)
 
-run_commands()
+if args.domain:
+    run_commands()
+    
+if args.convert:
+    convert()
