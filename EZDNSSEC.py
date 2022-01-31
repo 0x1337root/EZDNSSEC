@@ -145,7 +145,7 @@ def dkim_control():
         print(Fore.RED + '[!] There is no "p" tag in your DKIM record. You must specify a valid "p" tag!' + Style.RESET_ALL)
 
 def convert():
-    xslt_doc = etree.parse("./test.xslt")
+    xslt_doc = etree.parse("./stylesheet.xslt")
     xslt_transformer = etree.XSLT(xslt_doc)
  
     source_doc = etree.parse(args.convert)
