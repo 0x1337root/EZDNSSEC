@@ -9,7 +9,7 @@
 * Checking DMARC record
 * Checking DKIM record
 * Checking DNSSEC 
-# To-Do
+# TO-DO
 * Some whois info checks
 # Installation
 1. Clone the repository to your machine : `git clone https://github.com/0x1337root/EZDNSSEC.git`
