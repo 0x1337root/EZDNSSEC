@@ -11,6 +11,8 @@ parser = argparse.ArgumentParser(description="Write the domain")
 parser.add_argument('--domain', dest="domain", type=str, help="Domain to control")
 parser.add_argument('-s', dest="selector", type=str, help="DKIM selector")
 parser.add_argument('--convert', dest="convert", type=str, help='Convert XML to HTML')
+parser.add_argument('--open-relay', dest='open_relay', default=False, action='store_true', help='Check SMTP Open Relay')
+parser.add_argument('--start-tls', dest='start_tls', default=False, action='store_true', help='Check STARTTLS')
 args = parser.parse_args()
 
 try:
@@ -29,8 +31,8 @@ try:
         dkim_value = str(subprocess.getoutput("dig +short TXT " + str(args.selector) + "._domainkey." + args.domain))
 
     def smtp_open_relay_control():
-        sender = ["ezdnssec@yopmail.com", "ezdnssec@yopmail.com", "ezdnssec@" + args.domain]
-        receiver = ["ezndssec@yopmail.com", "ezdnssec@" + args.domain, "ezdnssec@" + args.domain]
+        sender = ["ezdnssec@protonmail.com", "ezdnssec@protonmail.com", "ezdnssec@" + args.domain]
+        receiver = ["ezndssec@protonmail.com", "ezdnssec@" + args.domain, "ezdnssec@" + args.domain]
 
         for i in range(0, len(mx_list), 1):
             mx_server = mx_list[i]
@@ -59,6 +61,10 @@ try:
                     else:
                         print(mx_server + Fore.GREEN + "      [+] This mail server is not vulnerable to SMTP Open Relay! (from internal source to internal destination)" + Style.RESET_ALL)
 
+    def mail_srvr_list():
+        for i in mx_list:
+            print(i)
+
     def starttls_control():
         count = 0
         try:
@@ -73,8 +79,8 @@ try:
                 else:
                     print(mx_list[i] + Fore.RED + "          [!] STARTTLS does not supported!" + Style.RESET_ALL)
         except:
-            for i in range(count):
-                print(mx_list[i] + Fore.RED + "          [!] STARTTLS does not supported!" + Style.RESET_ALL)
+            for i in mx_list:
+                print(i + Fore.RED + "          [!] STARTTLS does not supported!" + Style.RESET_ALL)
             
     def mta_control():
         if re.search("v=sts", mta_value.lower()):
@@ -160,12 +166,16 @@ try:
         if mx_value == "b''":
             print(Fore.RED + "[!] There is no MX record found!" + Style.RESET_ALL)
         else:
-            starttls_control()
+            if args.start_tls:
+                starttls_control()
+            else:
+                mail_srvr_list()
         print(Fore.MAGENTA + "-----------------------------------------" + Style.RESET_ALL)
-
-        print(Fore.BLUE + "[+] SMTP Open Relay Test" + Style.RESET_ALL)
-        smtp_open_relay_control()
-        print(Fore.MAGENTA + "-----------------------------------------" + Style.RESET_ALL)
+        
+        if args.open_relay:
+            print(Fore.BLUE + "[+] SMTP Open Relay Test" + Style.RESET_ALL)
+            smtp_open_relay_control()
+            print(Fore.MAGENTA + "-----------------------------------------" + Style.RESET_ALL)
 
         print(Fore.BLUE + "[+] MTA-STS Record" + Style.RESET_ALL)
         if mta_value == "b''":
@@ -373,12 +383,16 @@ except:
         if mx_value == "b''":
             print(Fore.RED + "[!] There is no MX record found!" + Style.RESET_ALL)
         else:
-            starttls_control()
+            if args.start_tls:
+                starttls_control()
+            else:
+                mail_srvr_list()
         print(Fore.MAGENTA + "-----------------------------------------" + Style.RESET_ALL)
 
-        print(Fore.BLUE + "[+] SMTP Open Relay Test" + Style.RESET_ALL)
-        smtp_open_relay_control()
-        print(Fore.MAGENTA + "-----------------------------------------" + Style.RESET_ALL)
+        if args.open_relay:
+            print(Fore.BLUE + "[+] SMTP Open Relay Test" + Style.RESET_ALL)
+            smtp_open_relay_control()
+            print(Fore.MAGENTA + "-----------------------------------------" + Style.RESET_ALL)
 
         print(Fore.BLUE + "[+] MTA-STS Record" + Style.RESET_ALL)
         if mta_value == "b''":
