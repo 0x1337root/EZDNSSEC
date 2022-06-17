@@ -8,13 +8,13 @@ from lxml import etree
 init()
 
 parser = argparse.ArgumentParser(description="Write the domain")
-parser.add_argument('--domain', dest="domain", type=str, help="Domain to control")
-parser.add_argument('-s', dest="selector", type=str, help="DKIM selector")
-parser.add_argument('--convert', dest="convert", type=str, help='Convert XML to HTML')
-parser.add_argument('--open-relay', dest='open_relay', default=False, action='store_true', help='Check SMTP Open Relay')
-parser.add_argument('--start-tls', dest='start_tls', default=False, action='store_true', help='Check STARTTLS')
-parser.add_argument('--dnssec', dest='dns_sec', default=False, action='store_true', help='Check DNSSEC')
-parser.add_argument('-o', dest='output', default=False, action='store_true', help='Output to a JSON file')
+parser.add_argument('-d', '--domain', dest="domain", type=str, help="Domain to control")
+parser.add_argument('-s', '--selector', dest="selector", type=str, help="DKIM selector")
+parser.add_argument('-c', '--convert', dest="convert", type=str, help='Convert XML to HTML')
+parser.add_argument('-or', '--open-relay', dest='open_relay', default=False, action='store_true', help='Check SMTP Open Relay')
+parser.add_argument('-st', '--start-tls', dest='start_tls', default=False, action='store_true', help='Check STARTTLS')
+parser.add_argument('-ds', '--dnssec', dest='dns_sec', default=False, action='store_true', help='Check DNSSEC')
+parser.add_argument('-o', '--output', dest='output', default=False, action='store_true', help='Output to a JSON file')
 args = parser.parse_args()
 
 try:
@@ -54,17 +54,23 @@ try:
                     smtpObj.sendmail(sender[i], receiver[i], message)
                     if i == 0:
                         print(mx_server + Fore.RED + "      [!] This mail server is vulnerable to SMTP Open Relay! (from external source to external destination)" + Style.RESET_ALL)
+                        json_data += '{"control_name":"OPEN_RELAY_CHECK","status":"fail","details":"This mail server is vulnerable to SMTP Open Relay! (from external source to external destination)"},'
                     elif i == 1:
                         print(mx_server + Fore.RED + "      [!] This mail server is vulnerable to SMTP Open Relay! (from external source to internal destination)" + Style.RESET_ALL)
+                        json_data += '{"control_name":"OPEN_RELAY_CHECK","status":"fail","details":"This mail server is vulnerable to SMTP Open Relay! (from external source to internal destination)"},'
                     else:
                         print(mx_server + Fore.RED + "      [!] This mail server is vulnerable to SMTP Open Relay! (from internal source to internal destination)" + Style.RESET_ALL)
+                        json_data += '{"control_name":"OPEN_RELAY_CHECK","status":"fail","details":"This mail server is vulnerable to SMTP Open Relay! (from internal source to internal destination)"},'
                 except:
                     if i == 0:
                         print(mx_server + Fore.GREEN + "      [+] This mail server is not vulnerable to SMTP Open Relay! (from external source to external destination)" + Style.RESET_ALL)
+                        json_data += '{"control_name":"OPEN_RELAY_CHECK","status":"pass","details":"This mail server is not vulnerable to SMTP Open Relay! (from external source to external destination)"},'
                     elif i == 1:
                         print(mx_server + Fore.GREEN + "      [+] This mail server is not vulnerable to SMTP Open Relay! (from external source to internal destination)" + Style.RESET_ALL)
+                        json_data += '{"control_name":"OPEN_RELAY_CHECK","status":"pass","details":"This mail server is not vulnerable to SMTP Open Relay! (from external source to internal destination)"},'
                     else:
                         print(mx_server + Fore.GREEN + "      [+] This mail server is not vulnerable to SMTP Open Relay! (from internal source to internal destination)" + Style.RESET_ALL)
+                        json_data += '{"control_name":"OPEN_RELAY_CHECK","status":"pass","details":"This mail server is not vulnerable to SMTP Open Relay! (from internal source to internal destination)"},'
 
     def mail_srvr_list():
         global json_data
@@ -218,7 +224,11 @@ try:
 
         if args.open_relay:
             print(Fore.BLUE + "[+] SMTP Open Relay Test" + Style.RESET_ALL)
-            smtp_open_relay_control()
+            if (mx_value == "b''") or (mx_value == None) or (mx_value == ""):
+                print(Fore.RED + "[!] There is no MX record found!" + Style.RESET_ALL)
+                json_data += '{"control_name":"OPEN_RELAY_CHECK","status":"fail","details":"There is no MX record found!"},'
+            else:
+                smtp_open_relay_control()
             print(Fore.MAGENTA + "-----------------------------------------" + Style.RESET_ALL)
 
         print(Fore.BLUE + "[+] MTA-STS Record" + Style.RESET_ALL)
@@ -333,17 +343,23 @@ except:
                     smtpObj.sendmail(sender[i], receiver[i], message)
                     if i == 0:
                         print(mx_server + Fore.RED + "      [!] This mail server is vulnerable to SMTP Open Relay! (from external source to external destination)" + Style.RESET_ALL)
+                        json_data += '{"control_name":"OPEN_RELAY_CHECK","status":"fail","details":"This mail server is vulnerable to SMTP Open Relay! (from external source to external destination)"},'
                     elif i == 1:
                         print(mx_server + Fore.RED + "      [!] This mail server is vulnerable to SMTP Open Relay! (from external source to internal destination)" + Style.RESET_ALL)
+                        json_data += '{"control_name":"OPEN_RELAY_CHECK","status":"fail","details":"This mail server is vulnerable to SMTP Open Relay! (from external source to internal destination)"},'
                     else:
                         print(mx_server + Fore.RED + "      [!] This mail server is vulnerable to SMTP Open Relay! (from internal source to internal destination)" + Style.RESET_ALL)
+                        json_data += '{"control_name":"OPEN_RELAY_CHECK","status":"fail","details":"This mail server is vulnerable to SMTP Open Relay! (from internal source to internal destination)"},'
                 except:
                     if i == 0:
                         print(mx_server + Fore.GREEN + "      [+] This mail server is not vulnerable to SMTP Open Relay! (from external source to external destination)" + Style.RESET_ALL)
+                        json_data += '{"control_name":"OPEN_RELAY_CHECK","status":"pass","details":"This mail server is not vulnerable to SMTP Open Relay! (from external source to external destination)"},'
                     elif i == 1:
                         print(mx_server + Fore.GREEN + "      [+] This mail server is not vulnerable to SMTP Open Relay! (from external source to internal destination)" + Style.RESET_ALL)
+                        json_data += '{"control_name":"OPEN_RELAY_CHECK","status":"pass","details":"This mail server is not vulnerable to SMTP Open Relay! (from external source to internal destination)"},'
                     else:
                         print(mx_server + Fore.GREEN + "      [+] This mail server is not vulnerable to SMTP Open Relay! (from internal source to internal destination)" + Style.RESET_ALL)
+                        json_data += '{"control_name":"OPEN_RELAY_CHECK","status":"pass","details":"This mail server is not vulnerable to SMTP Open Relay! (from internal source to internal destination)"},'
 
     def mail_srvr_list():
         global json_data
@@ -497,7 +513,11 @@ except:
 
         if args.open_relay:
             print(Fore.BLUE + "[+] SMTP Open Relay Test" + Style.RESET_ALL)
-            smtp_open_relay_control()
+            if (mx_value == "b''") or (mx_value == None) or (mx_value == ""):
+                print(Fore.RED + "[!] There is no MX record found!" + Style.RESET_ALL)
+                json_data += '{"control_name":"OPEN_RELAY_CHECK","status":"fail","details":"There is no MX record found!"},'
+            else:
+                smtp_open_relay_control()
             print(Fore.MAGENTA + "-----------------------------------------" + Style.RESET_ALL)
 
         print(Fore.BLUE + "[+] MTA-STS Record" + Style.RESET_ALL)
