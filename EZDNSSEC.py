@@ -14,7 +14,7 @@ parser.add_argument('-c', '--convert', dest="convert", type=str, help='Convert X
 parser.add_argument('-or', '--open-relay', dest='open_relay', default=False, action='store_true', help='Check SMTP Open Relay')
 parser.add_argument('-st', '--start-tls', dest='start_tls', default=False, action='store_true', help='Check STARTTLS')
 parser.add_argument('-ds', '--dnssec', dest='dns_sec', default=False, action='store_true', help='Check DNSSEC')
-parser.add_argument('-o', '--output', dest='output', default=False, action='store_true', help='Output to a JSON file')
+parser.add_argument('-o', '--output', dest='output', type=str, help='Output to a JSON file')
 args = parser.parse_args()
 
 try:
@@ -304,7 +304,7 @@ try:
         json_formatted_str = json.dumps(json_object, indent=2)
 
         if args.output:
-            with open("output.json", "w") as outfile:
+            with open(args.output, "w") as outfile:
                 outfile.write(json_formatted_str)
 
     if args.convert:
@@ -593,7 +593,7 @@ except:
         json_formatted_str = json.dumps(json_object, indent=2)
 
         if args.output:
-            with open("output.json", "w") as outfile:
+            with open(args.output, "w") as outfile:
                 outfile.write(json_formatted_str)
 
     if args.convert:
