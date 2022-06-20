@@ -9,8 +9,6 @@
 * Checking DMARC record
 * Checking DKIM record
 * Checking DNSSEC 
-# TO-DO
-* Some whois info checks
 # Installation
 1. Clone the repository to your machine : `git clone https://github.com/0x1337root/EZDNSSEC.git`
 2. Go to the folder : `cd EZDNSSEC`
@@ -21,8 +19,8 @@
 # Usage
 To get a list of all options and learn how to use this app, enter the following command :<br>
 `./EZDNSSEC.py -h`<br><br>
-**General Usage :** `./EZDNSSEC.py <domain> -s <selector>`<br><br>
-**Example 1 :** `./EZDNSSEC.py example.com`<br>
-**Example 2 :** `./EZDNSSEC.py example.com -s selector`<br>
+**General Usage :** `./EZDNSSEC.py -d <domain> -s <selector>`<br><br>
+**Example 1 :** `./EZDNSSEC.py -d example.com -or -st -ds`<br>
+**Example 2 :** `./EZDNSSEC.py example.com -s selector -o <filename.json>`<br>
 # Screenshot
 ![alt text](https://github.com/0x1337root/EZDNSSEC/blob/main/usage.PNG)
