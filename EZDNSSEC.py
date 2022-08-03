@@ -45,7 +45,6 @@ try:
                 message = """From: From Person <""" + sender[i] + """>
                 To: To Person <""" + receiver[i] + """>
                 Subject: SMTP open relay test
-
                 This is a test e-mail message.
                 """
                 
@@ -101,102 +100,195 @@ try:
 
     def mta_control():
         global json_data
-        if re.search("v=sts", mta_value.lower()):
-            print(Fore.GREEN + '\n[+] Your MTA-STS record "v" tag is clearly configured' + Style.RESET_ALL)
-            json_data += '{"control_name":"MTA_STS","status":"pass","value":'+str(mta_value)+',"specified_tag":"v","details":"Your MTA-STS record v tag is clearly configured"},'
-        else:
-            print(Fore.RED + '[!] You must specify a valid MTA-STS record "v" tag!' + Style.RESET_ALL)
-            json_data += '{"control_name":"MTA_STS","status":"fail","value":'+str(mta_value)+',"specified_tag":"v","details":"You must specify a valid MTA-STS record v tag!"},'
+        if mta_value.startswith('"') and mta_value.endswith('"'):
+            if re.search("v=sts", mta_value.lower()):
+                print(Fore.GREEN + '\n[+] Your MTA-STS record "v" tag is clearly configured' + Style.RESET_ALL)
+                json_data += '{"control_name":"MTA_STS","status":"pass","value":'+str(mta_value)+',"specified_tag":"v","details":"Your MTA-STS record v tag is clearly configured"},'
+            else:
+                print(Fore.RED + '[!] You must specify a valid MTA-STS record "v" tag!' + Style.RESET_ALL)
+                json_data += '{"control_name":"MTA_STS","status":"fail","value":'+str(mta_value)+',"specified_tag":"v","details":"You must specify a valid MTA-STS record v tag!"},'
 
-        if re.search("id=", mta_value.lower()):
-            print(Fore.GREEN + '[+] Your MTA-STS record "id" tag is clearly configured' + Style.RESET_ALL)
-            json_data += '{"control_name":"MTA_STS","status":"pass","value":'+str(mta_value)+',"specified_tag":"id","details":"Your MTA-STS record id tag is clearly configured"}'
+            if re.search("id=", mta_value.lower()):
+                print(Fore.GREEN + '[+] Your MTA-STS record "id" tag is clearly configured' + Style.RESET_ALL)
+                json_data += '{"control_name":"MTA_STS","status":"pass","value":'+str(mta_value)+',"specified_tag":"id","details":"Your MTA-STS record id tag is clearly configured"}'
+            else:
+                print(Fore.RED + '[!] You must specify a valid MTA-STS record "id" tag!' + Style.RESET_ALL)
+                json_data += '{"control_name":"MTA_STS","status":"fail","value":'+str(mta_value)+',"specified_tag":"id","details":"You must specify a valid MTA-STS record id tag!"}'
         else:
-            print(Fore.RED + '[!] You must specify a valid MTA-STS record "id" tag!' + Style.RESET_ALL)
-            json_data += '{"control_name":"MTA_STS","status":"fail","value":'+str(mta_value)+',"specified_tag":"id","details":"You must specify a valid MTA-STS record id tag!"}'
+            if re.search("v=sts", mta_value.lower()):
+                print(Fore.GREEN + '\n[+] Your MTA-STS record "v" tag is clearly configured' + Style.RESET_ALL)
+                json_data += '{"control_name":"MTA_STS","status":"pass","value":"'+str(mta_value)+'","specified_tag":"v","details":"Your MTA-STS record v tag is clearly configured"},'
+            else:
+                print(Fore.RED + '[!] You must specify a valid MTA-STS record "v" tag!' + Style.RESET_ALL)
+                json_data += '{"control_name":"MTA_STS","status":"fail","value":"'+str(mta_value)+'","specified_tag":"v","details":"You must specify a valid MTA-STS record v tag!"},'
+
+            if re.search("id=", mta_value.lower()):
+                print(Fore.GREEN + '[+] Your MTA-STS record "id" tag is clearly configured' + Style.RESET_ALL)
+                json_data += '{"control_name":"MTA_STS","status":"pass","value":"'+str(mta_value)+'","specified_tag":"id","details":"Your MTA-STS record id tag is clearly configured"}'
+            else:
+                print(Fore.RED + '[!] You must specify a valid MTA-STS record "id" tag!' + Style.RESET_ALL)
+                json_data += '{"control_name":"MTA_STS","status":"fail","value":"'+str(mta_value)+'","specified_tag":"id","details":"You must specify a valid MTA-STS record id tag!"}'
 
     def tls_control():
         global json_data
-        if re.search("v=tlsrpt", tls_value.lower()):
-            print(Fore.GREEN + '\n[+] Your TLS-RPT record "v" tag is clearly configured' + Style.RESET_ALL)
-            json_data += ',{"control_name":"TLS_RPT","status":"pass","value":'+str(tls_value)+',"specified_tag":"v","details":"Your TLS-RPT record v tag is clearly configured"}'
-        else:
-            print(Fore.RED + '[!] You must specify a valid TLS-RPT record "v" tag!' + Style.RESET_ALL)
-            json_data += ',{"control_name":"TLS_RPT","status":"fail","value":'+str(tls_value)+',"specified_tag":"v","details":"You must specify a valid TLS-RPT record v tag!"}'
+        if tls_value.startswith('"') and tls_value.endswith('"'):
+            if re.search("v=tlsrpt", tls_value.lower()):
+                print(Fore.GREEN + '\n[+] Your TLS-RPT record "v" tag is clearly configured' + Style.RESET_ALL)
+                json_data += ',{"control_name":"TLS_RPT","status":"pass","value":'+str(tls_value)+',"specified_tag":"v","details":"Your TLS-RPT record v tag is clearly configured"}'
+            else:
+                print(Fore.RED + '[!] You must specify a valid TLS-RPT record "v" tag!' + Style.RESET_ALL)
+                json_data += ',{"control_name":"TLS_RPT","status":"fail","value":'+str(tls_value)+',"specified_tag":"v","details":"You must specify a valid TLS-RPT record v tag!"}'
 
-        if re.search("rua=", tls_value.lower()):
-            print(Fore.GREEN + '[+] Your TLS-RPT record "rua" tag is clearly configured' + Style.RESET_ALL)
-            json_data += ',{"control_name":"TLS_RPT","status":"pass","value":'+str(tls_value)+',"specified_tag":"rua","details":"Your TLS-RPT record rua tag is clearly configured"}'
+            if re.search("rua=", tls_value.lower()):
+                print(Fore.GREEN + '[+] Your TLS-RPT record "rua" tag is clearly configured' + Style.RESET_ALL)
+                json_data += ',{"control_name":"TLS_RPT","status":"pass","value":'+str(tls_value)+',"specified_tag":"rua","details":"Your TLS-RPT record rua tag is clearly configured"}'
+            else:
+                print(Fore.RED + '[!] There is no "rua" tag in your TLS-RPT record. You must specify a valid "rua" tag!' + Style.RESET_ALL)
+                json_data += ',{"control_name":"TLS_RPT","status":"fail","value":'+str(tls_value)+',"specified_tag":"rua","details":"There is no rua tag in your TLS-RPT record. You must specify a valid rua tag!"}'
         else:
-            print(Fore.RED + '[!] There is no "rua" tag in your TLS-RPT record. You must specify a valid "rua" tag!' + Style.RESET_ALL)
-            json_data += ',{"control_name":"TLS_RPT","status":"fail","value":'+str(tls_value)+',"specified_tag":"rua","details":"There is no rua tag in your TLS-RPT record. You must specify a valid rua tag!"}'
+            if re.search("v=tlsrpt", tls_value.lower()):
+                print(Fore.GREEN + '\n[+] Your TLS-RPT record "v" tag is clearly configured' + Style.RESET_ALL)
+                json_data += ',{"control_name":"TLS_RPT","status":"pass","value":"'+str(tls_value)+'","specified_tag":"v","details":"Your TLS-RPT record v tag is clearly configured"}'
+            else:
+                print(Fore.RED + '[!] You must specify a valid TLS-RPT record "v" tag!' + Style.RESET_ALL)
+                json_data += ',{"control_name":"TLS_RPT","status":"fail","value":"'+str(tls_value)+'","specified_tag":"v","details":"You must specify a valid TLS-RPT record v tag!"}'
+
+            if re.search("rua=", tls_value.lower()):
+                print(Fore.GREEN + '[+] Your TLS-RPT record "rua" tag is clearly configured' + Style.RESET_ALL)
+                json_data += ',{"control_name":"TLS_RPT","status":"pass","value":"'+str(tls_value)+'","specified_tag":"rua","details":"Your TLS-RPT record rua tag is clearly configured"}'
+            else:
+                print(Fore.RED + '[!] There is no "rua" tag in your TLS-RPT record. You must specify a valid "rua" tag!' + Style.RESET_ALL)
+                json_data += ',{"control_name":"TLS_RPT","status":"fail","value":"'+str(tls_value)+'","specified_tag":"rua","details":"There is no rua tag in your TLS-RPT record. You must specify a valid rua tag!"}'
 
     def spf_control():
         global json_data
-        if spf_value.find('-all') != -1:
-            print(Fore.GREEN + "\n[+] Your SPF record well-configured" + Style.RESET_ALL)
-            json_data += ',{"control_name":"SPF_CHECK","status":"pass","value":'+str(spf_value)+',"details":"Your SPF record well-configured"}'
-        elif spf_value.find('~all') != -1:
-            print(Fore.YELLOW + "\n[*] Your SPF record has a softfail, you should check sub nodes for SPF" + Style.RESET_ALL)
-            json_data += ',{"control_name":"SPF_CHECK","status":"warning","value":'+str(spf_value)+',"details":"Your SPF record has a softfail, you should check sub nodes for SPF"}'
+        if spf_value.startswith('"') and spf_value.endswith('"'):
+            if spf_value.find('-all') != -1:
+                print(Fore.GREEN + "\n[+] Your SPF record well-configured" + Style.RESET_ALL)
+                json_data += ',{"control_name":"SPF_CHECK","status":"pass","value":'+str(spf_value)+',"details":"Your SPF record well-configured"}'
+            elif spf_value.find('~all') != -1:
+                print(Fore.YELLOW + "\n[*] Your SPF record has a softfail, you should check sub nodes for SPF" + Style.RESET_ALL)
+                json_data += ',{"control_name":"SPF_CHECK","status":"warning","value":'+str(spf_value)+',"details":"Your SPF record has a softfail, you should check sub nodes for SPF"}'
+            else:
+                print(Fore.RED + "\n[!] You must create SPF record or check sub nodes for SPF" + Style.RESET_ALL)
+                json_data += ',{"control_name":"SPF_CHECK","status":"fail","value":'+str(spf_value)+',"details":"You must create SPF record or check sub nodes for SPF"}'
         else:
-            print(Fore.RED + "\n[!] You must create SPF record or check sub nodes for SPF" + Style.RESET_ALL)
-            json_data += ',{"control_name":"SPF_CHECK","status":"fail","value":'+str(spf_value)+',"details":"You must create SPF record or check sub nodes for SPF"}'
+            if spf_value.find('-all') != -1:
+                print(Fore.GREEN + "\n[+] Your SPF record well-configured" + Style.RESET_ALL)
+                json_data += ',{"control_name":"SPF_CHECK","status":"pass","value":"'+str(spf_value)+'","details":"Your SPF record well-configured"}'
+            elif spf_value.find('~all') != -1:
+                print(Fore.YELLOW + "\n[*] Your SPF record has a softfail, you should check sub nodes for SPF" + Style.RESET_ALL)
+                json_data += ',{"control_name":"SPF_CHECK","status":"warning","value":"'+str(spf_value)+'","details":"Your SPF record has a softfail, you should check sub nodes for SPF"}'
+            else:
+                print(Fore.RED + "\n[!] You must create SPF record or check sub nodes for SPF" + Style.RESET_ALL)
+                json_data += ',{"control_name":"SPF_CHECK","status":"fail","value":"'+str(spf_value)+'","details":"You must create SPF record or check sub nodes for SPF"}'
 
     def dmarc_control():
         global json_data
-        if re.search("p=none", dmarc_value.lower()):
-            print(Fore.RED + '\n[!] Your email is vulnerable to email spoofing!' + Style.RESET_ALL)
-            print(Fore.RED + '[!] Your DMARC record "p" tag is set to "none". Spoofed emails can be send to your inbox. You should change it!' + Style.RESET_ALL)
-            json_data += ',{"control_name":"DMARC_CHECK","status":"fail","value":'+str(dmarc_value)+',"specified_tag":"p","details":"Your email is vulnerable to email spoofing! Your DMARC record p tag is set to none. Spoofed emails can be send to your inbox. You should change it!"}'
-        elif re.search("p=reject", dmarc_value.lower()):
-            print(Fore.GREEN + '\n[+] Your DMARC record "p" tag is clearly configured' + Style.RESET_ALL)
-            json_data += ',{"control_name":"DMARC_CHECK","status":"pass","value":'+str(dmarc_value)+',"specified_tag":"p","details":"Your DMARC record p tag is clearly configured"}'
-        elif re.search("p=quarantine", dmarc_value.lower()):
-            print(Fore.YELLOW + '\n[*] Your DMARC record "p" tag is set to "quarantine". Spoofed emails can be send to your spam box!' + Style.RESET_ALL)
-            json_data += ',{"control_name":"DMARC_CHECK","status":"warning","value":'+str(dmarc_value)+',"specified_tag":"p","details":"Your DMARC record p tag is set to quarantine. Spoofed emails can be send to your spam box!"}'
-        else:
-            print(Fore.RED + '\n[!] Your email is vulnerable to email spoofing!' + Style.RESET_ALL)
-            print(Fore.RED + '[!] There is no "p" tag in your DMARC record. Spoofed emails can be send to your inbox. You must specify a valid "p" tag!' + Style.RESET_ALL)
-            json_data += ',{"control_name":"DMARC_CHECK","status":"fail","value":'+str(dmarc_value)+',"specified_tag":"p","details":"Your email is vulnerable to email spoofing! There is no p tag in your DMARC record. Spoofed emails can be send to your inbox. You must specify a valid p tag!"}'
+        if dmarc_value.startswith('"') and dmarc_value.endswith('"'):    
+            if re.search("p=none", dmarc_value.lower()):
+                print(Fore.RED + '\n[!] Your email is vulnerable to email spoofing!' + Style.RESET_ALL)
+                print(Fore.RED + '[!] Your DMARC record "p" tag is set to "none". Spoofed emails can be send to your inbox. You should change it!' + Style.RESET_ALL)
+                json_data += ',{"control_name":"DMARC_CHECK","status":"fail","value":'+str(dmarc_value)+',"specified_tag":"p","details":"Your email is vulnerable to email spoofing! Your DMARC record p tag is set to none. Spoofed emails can be send to your inbox. You should change it!"}'
+            elif re.search("p=reject", dmarc_value.lower()):
+                print(Fore.GREEN + '\n[+] Your DMARC record "p" tag is clearly configured' + Style.RESET_ALL)
+                json_data += ',{"control_name":"DMARC_CHECK","status":"pass","value":'+str(dmarc_value)+',"specified_tag":"p","details":"Your DMARC record p tag is clearly configured"}'
+            elif re.search("p=quarantine", dmarc_value.lower()):
+                print(Fore.YELLOW + '\n[*] Your DMARC record "p" tag is set to "quarantine". Spoofed emails can be send to your spam box!' + Style.RESET_ALL)
+                json_data += ',{"control_name":"DMARC_CHECK","status":"warning","value":'+str(dmarc_value)+',"specified_tag":"p","details":"Your DMARC record p tag is set to quarantine. Spoofed emails can be send to your spam box!"}'
+            else:
+                print(Fore.RED + '\n[!] Your email is vulnerable to email spoofing!' + Style.RESET_ALL)
+                print(Fore.RED + '[!] There is no "p" tag in your DMARC record. Spoofed emails can be send to your inbox. You must specify a valid "p" tag!' + Style.RESET_ALL)
+                json_data += ',{"control_name":"DMARC_CHECK","status":"fail","value":'+str(dmarc_value)+',"specified_tag":"p","details":"Your email is vulnerable to email spoofing! There is no p tag in your DMARC record. Spoofed emails can be send to your inbox. You must specify a valid p tag!"}'
 
-        if re.search("v=dmarc", dmarc_value.lower()):
-            print(Fore.GREEN + '[+] Your DMARC record "v" tag is clearly configured' + Style.RESET_ALL)
-            json_data += ',{"control_name":"DMARC_CHECK","status":"pass","value":'+str(dmarc_value)+',"specified_tag":"v","details":"Your DMARC record v tag is clearly configured"}'
-        else:
-            print(Fore.RED + '[!] You must specify a valid DMARC record "v" tag!' + Style.RESET_ALL)
-            json_data += ',{"control_name":"DMARC_CHECK","status":"fail","value":'+str(dmarc_value)+',"specified_tag":"v","details":"You must specify a valid DMARC record v tag!"}'
+            if re.search("v=dmarc", dmarc_value.lower()):
+                print(Fore.GREEN + '[+] Your DMARC record "v" tag is clearly configured' + Style.RESET_ALL)
+                json_data += ',{"control_name":"DMARC_CHECK","status":"pass","value":'+str(dmarc_value)+',"specified_tag":"v","details":"Your DMARC record v tag is clearly configured"}'
+            else:
+                print(Fore.RED + '[!] You must specify a valid DMARC record "v" tag!' + Style.RESET_ALL)
+                json_data += ',{"control_name":"DMARC_CHECK","status":"fail","value":'+str(dmarc_value)+',"specified_tag":"v","details":"You must specify a valid DMARC record v tag!"}'
 
-        if re.search("rua=", dmarc_value.lower()):
-            print(Fore.GREEN + '[+] Your DMARC record "rua" tag is clearly configured' + Style.RESET_ALL)
-            json_data += ',{"control_name":"DMARC_CHECK","status":"pass","value":'+str(dmarc_value)+',"specified_tag":"rua","details":"Your DMARC record rua tag is clearly configured"}'
+            if re.search("rua=", dmarc_value.lower()):
+                print(Fore.GREEN + '[+] Your DMARC record "rua" tag is clearly configured' + Style.RESET_ALL)
+                json_data += ',{"control_name":"DMARC_CHECK","status":"pass","value":'+str(dmarc_value)+',"specified_tag":"rua","details":"Your DMARC record rua tag is clearly configured"}'
+            else:
+                print(Fore.RED + '[!] There is no "rua" tag in your DMARC record. You must specify a valid "rua" tag!' + Style.RESET_ALL)
+                json_data += ',{"control_name":"DMARC_CHECK","status":"fail","value":'+str(dmarc_value)+',"specified_tag":"rua","details":"There is no rua tag in your DMARC record. You must specify a valid rua tag!"}'
         else:
-            print(Fore.RED + '[!] There is no "rua" tag in your DMARC record. You must specify a valid "rua" tag!' + Style.RESET_ALL)
-            json_data += ',{"control_name":"DMARC_CHECK","status":"fail","value":'+str(dmarc_value)+',"specified_tag":"rua","details":"There is no rua tag in your DMARC record. You must specify a valid rua tag!"}'
+            if re.search("p=none", dmarc_value.lower()):
+                print(Fore.RED + '\n[!] Your email is vulnerable to email spoofing!' + Style.RESET_ALL)
+                print(Fore.RED + '[!] Your DMARC record "p" tag is set to "none". Spoofed emails can be send to your inbox. You should change it!' + Style.RESET_ALL)
+                json_data += ',{"control_name":"DMARC_CHECK","status":"fail","value":"'+str(dmarc_value)+'","specified_tag":"p","details":"Your email is vulnerable to email spoofing! Your DMARC record p tag is set to none. Spoofed emails can be send to your inbox. You should change it!"}'
+            elif re.search("p=reject", dmarc_value.lower()):
+                print(Fore.GREEN + '\n[+] Your DMARC record "p" tag is clearly configured' + Style.RESET_ALL)
+                json_data += ',{"control_name":"DMARC_CHECK","status":"pass","value":"'+str(dmarc_value)+'","specified_tag":"p","details":"Your DMARC record p tag is clearly configured"}'
+            elif re.search("p=quarantine", dmarc_value.lower()):
+                print(Fore.YELLOW + '\n[*] Your DMARC record "p" tag is set to "quarantine". Spoofed emails can be send to your spam box!' + Style.RESET_ALL)
+                json_data += ',{"control_name":"DMARC_CHECK","status":"warning","value":"'+str(dmarc_value)+'","specified_tag":"p","details":"Your DMARC record p tag is set to quarantine. Spoofed emails can be send to your spam box!"}'
+            else:
+                print(Fore.RED + '\n[!] Your email is vulnerable to email spoofing!' + Style.RESET_ALL)
+                print(Fore.RED + '[!] There is no "p" tag in your DMARC record. Spoofed emails can be send to your inbox. You must specify a valid "p" tag!' + Style.RESET_ALL)
+                json_data += ',{"control_name":"DMARC_CHECK","status":"fail","value":"'+str(dmarc_value)+'","specified_tag":"p","details":"Your email is vulnerable to email spoofing! There is no p tag in your DMARC record. Spoofed emails can be send to your inbox. You must specify a valid p tag!"}'
 
+            if re.search("v=dmarc", dmarc_value.lower()):
+                print(Fore.GREEN + '[+] Your DMARC record "v" tag is clearly configured' + Style.RESET_ALL)
+                json_data += ',{"control_name":"DMARC_CHECK","status":"pass","value":"'+str(dmarc_value)+'","specified_tag":"v","details":"Your DMARC record v tag is clearly configured"}'
+            else:
+                print(Fore.RED + '[!] You must specify a valid DMARC record "v" tag!' + Style.RESET_ALL)
+                json_data += ',{"control_name":"DMARC_CHECK","status":"fail","value":"'+str(dmarc_value)+'","specified_tag":"v","details":"You must specify a valid DMARC record v tag!"}'
+
+            if re.search("rua=", dmarc_value.lower()):
+                print(Fore.GREEN + '[+] Your DMARC record "rua" tag is clearly configured' + Style.RESET_ALL)
+                json_data += ',{"control_name":"DMARC_CHECK","status":"pass","value":"'+str(dmarc_value)+'","specified_tag":"rua","details":"Your DMARC record rua tag is clearly configured"}'
+            else:
+                print(Fore.RED + '[!] There is no "rua" tag in your DMARC record. You must specify a valid "rua" tag!' + Style.RESET_ALL)
+                json_data += ',{"control_name":"DMARC_CHECK","status":"fail","value":"'+str(dmarc_value)+'","specified_tag":"rua","details":"There is no rua tag in your DMARC record. You must specify a valid rua tag!"}'
+        
     def dkim_control():
         global json_data
-        if re.search("v=dkim", dkim_value.lower()):
-            print(Fore.GREEN + '\n[+] Your DKIM record "v" tag is clearly configured' + Style.RESET_ALL)
-            json_data += ',{"control_name":"DKIM_CHECK","status":"pass","value":'+str(dkim_value)+',"specified_tag":"v","details":"Your DKIM record v tag is clearly configured"}'
+        if dkim_value.startswith('"') and dmarc_value.endswith('"'):
+            if re.search("v=dkim", dkim_value.lower()):
+                print(Fore.GREEN + '\n[+] Your DKIM record "v" tag is clearly configured' + Style.RESET_ALL)
+                json_data += ',{"control_name":"DKIM_CHECK","status":"pass","value":'+str(dkim_value)+',"specified_tag":"v","details":"Your DKIM record v tag is clearly configured"}'
+            else:
+                print(Fore.RED + '[!] You must specify a valid DKIM record "v" tag!' + Style.RESET_ALL)
+                json_data += ',{"control_name":"DKIM_CHECK","status":"fail","value":'+str(dkim_value)+',"specified_tag":"v","details":"You must specify a valid DKIM record v tag!"}'
+            
+            if re.search("k=", dkim_value.lower()):
+                print(Fore.GREEN + '[+] Your DKIM record "k" tag is clearly configured' + Style.RESET_ALL)
+                json_data += ',{"control_name":"DKIM_CHECK","status":"pass","value":'+str(dkim_value)+',"specified_tag":"k","details":"Your DKIM record k tag is clearly configured"}'
+            else:
+                print(Fore.RED + '[!] There is no "k" tag in your DKIM record. You must specify a valid "k" tag!' + Style.RESET_ALL)
+                json_data += ',{"control_name":"DKIM_CHECK","status":"fail","value":'+str(dkim_value)+',"specified_tag":"k","details":"There is no k tag in your DKIM record. You must specify a valid k tag!"}'
+
+            if re.search("p=", dkim_value.lower()):
+                print(Fore.GREEN + '[+] Your DKIM record "p" tag is clearly configured' + Style.RESET_ALL)
+                json_data += ',{"control_name":"DKIM_CHECK","status":"pass","value":'+str(dkim_value)+',"specified_tag":"p","details":"Your DKIM record p tag is clearly configured"}'
+            else:
+                print(Fore.RED + '[!] There is no "p" tag in your DKIM record. You must specify a valid "p" tag!' + Style.RESET_ALL)
+                json_data += ',{"control_name":"DKIM_CHECK","status":"fail","value":'+str(dkim_value)+',"specified_tag":"p","details":"There is no p tag in your DKIM record. You must specify a valid p tag!"}'
         else:
-            print(Fore.RED + '[!] You must specify a valid DKIM record "v" tag!' + Style.RESET_ALL)
-            json_data += ',{"control_name":"DKIM_CHECK","status":"fail","value":'+str(dkim_value)+',"specified_tag":"v","details":"You must specify a valid DKIM record v tag!"}'
+            if re.search("v=dkim", dkim_value.lower()):
+                print(Fore.GREEN + '\n[+] Your DKIM record "v" tag is clearly configured' + Style.RESET_ALL)
+                json_data += ',{"control_name":"DKIM_CHECK","status":"pass","value":'+str(dkim_value)+',"specified_tag":"v","details":"Your DKIM record v tag is clearly configured"}'
+            else:
+                print(Fore.RED + '[!] You must specify a valid DKIM record "v" tag!' + Style.RESET_ALL)
+                json_data += ',{"control_name":"DKIM_CHECK","status":"fail","value":'+str(dkim_value)+',"specified_tag":"v","details":"You must specify a valid DKIM record v tag!"}'
+            
+            if re.search("k=", dkim_value.lower()):
+                print(Fore.GREEN + '[+] Your DKIM record "k" tag is clearly configured' + Style.RESET_ALL)
+                json_data += ',{"control_name":"DKIM_CHECK","status":"pass","value":'+str(dkim_value)+',"specified_tag":"k","details":"Your DKIM record k tag is clearly configured"}'
+            else:
+                print(Fore.RED + '[!] There is no "k" tag in your DKIM record. You must specify a valid "k" tag!' + Style.RESET_ALL)
+                json_data += ',{"control_name":"DKIM_CHECK","status":"fail","value":'+str(dkim_value)+',"specified_tag":"k","details":"There is no k tag in your DKIM record. You must specify a valid k tag!"}'
+
+            if re.search("p=", dkim_value.lower()):
+                print(Fore.GREEN + '[+] Your DKIM record "p" tag is clearly configured' + Style.RESET_ALL)
+                json_data += ',{"control_name":"DKIM_CHECK","status":"pass","value":'+str(dkim_value)+',"specified_tag":"p","details":"Your DKIM record p tag is clearly configured"}'
+            else:
+                print(Fore.RED + '[!] There is no "p" tag in your DKIM record. You must specify a valid "p" tag!' + Style.RESET_ALL)
+                json_data += ',{"control_name":"DKIM_CHECK","status":"fail","value":'+str(dkim_value)+',"specified_tag":"p","details":"There is no p tag in your DKIM record. You must specify a valid p tag!"}'
         
-        if re.search("k=", dkim_value.lower()):
-            print(Fore.GREEN + '[+] Your DKIM record "k" tag is clearly configured' + Style.RESET_ALL)
-            json_data += ',{"control_name":"DKIM_CHECK","status":"pass","value":'+str(dkim_value)+',"specified_tag":"k","details":"Your DKIM record k tag is clearly configured"}'
-        else:
-            print(Fore.RED + '[!] There is no "k" tag in your DKIM record. You must specify a valid "k" tag!' + Style.RESET_ALL)
-            json_data += ',{"control_name":"DKIM_CHECK","status":"fail","value":'+str(dkim_value)+',"specified_tag":"k","details":"There is no k tag in your DKIM record. You must specify a valid k tag!"}'
-
-        if re.search("p=", dkim_value.lower()):
-            print(Fore.GREEN + '[+] Your DKIM record "p" tag is clearly configured' + Style.RESET_ALL)
-            json_data += ',{"control_name":"DKIM_CHECK","status":"pass","value":'+str(dkim_value)+',"specified_tag":"p","details":"Your DKIM record p tag is clearly configured"}'
-        else:
-            print(Fore.RED + '[!] There is no "p" tag in your DKIM record. You must specify a valid "p" tag!' + Style.RESET_ALL)
-            json_data += ',{"control_name":"DKIM_CHECK","status":"fail","value":'+str(dkim_value)+',"specified_tag":"p","details":"There is no p tag in your DKIM record. You must specify a valid p tag!"}'
-
     def convert():
         xslt_doc = etree.parse("./stylesheet.xslt")
         xslt_transformer = etree.XSLT(xslt_doc)
@@ -300,10 +392,10 @@ try:
 
     if args.domain:
         run_commands()
-        json_object = json.loads(json_data)
-        json_formatted_str = json.dumps(json_object, indent=2)
 
         if args.output:
+            json_object = json.loads(json_data)
+            json_formatted_str = json.dumps(json_object, indent=2)
             with open(args.output, "w") as outfile:
                 outfile.write(json_formatted_str)
 
@@ -334,7 +426,6 @@ except:
                 message = """From: From Person <""" + sender[i] + """>
                 To: To Person <""" + receiver[i] + """>
                 Subject: SMTP open relay test
-
                 This is a test e-mail message.
                 """
                 
@@ -390,102 +481,195 @@ except:
 
     def mta_control():
         global json_data
-        if re.search("v=sts", mta_value.lower()):
-            print(Fore.GREEN + '\n[+] Your MTA-STS record "v" tag is clearly configured' + Style.RESET_ALL)
-            json_data += '{"control_name":"MTA_STS","status":"pass","value":'+str(mta_value)+',"specified_tag":"v","details":"Your MTA-STS record v tag is clearly configured"},'
-        else:
-            print(Fore.RED + '[!] You must specify a valid MTA-STS record "v" tag!' + Style.RESET_ALL)
-            json_data += '{"control_name":"MTA_STS","status":"fail","value":'+str(mta_value)+',"specified_tag":"v","details":"You must specify a valid MTA-STS record v tag!"},'
+        if mta_value.startswith('"') and mta_value.endswith('"'):
+            if re.search("v=sts", mta_value.lower()):
+                print(Fore.GREEN + '\n[+] Your MTA-STS record "v" tag is clearly configured' + Style.RESET_ALL)
+                json_data += '{"control_name":"MTA_STS","status":"pass","value":'+str(mta_value)+',"specified_tag":"v","details":"Your MTA-STS record v tag is clearly configured"},'
+            else:
+                print(Fore.RED + '[!] You must specify a valid MTA-STS record "v" tag!' + Style.RESET_ALL)
+                json_data += '{"control_name":"MTA_STS","status":"fail","value":'+str(mta_value)+',"specified_tag":"v","details":"You must specify a valid MTA-STS record v tag!"},'
 
-        if re.search("id=", mta_value.lower()):
-            print(Fore.GREEN + '[+] Your MTA-STS record "id" tag is clearly configured' + Style.RESET_ALL)
-            json_data += '{"control_name":"MTA_STS","status":"pass","value":'+str(mta_value)+',"specified_tag":"id","details":"Your MTA-STS record id tag is clearly configured"}'
+            if re.search("id=", mta_value.lower()):
+                print(Fore.GREEN + '[+] Your MTA-STS record "id" tag is clearly configured' + Style.RESET_ALL)
+                json_data += '{"control_name":"MTA_STS","status":"pass","value":'+str(mta_value)+',"specified_tag":"id","details":"Your MTA-STS record id tag is clearly configured"}'
+            else:
+                print(Fore.RED + '[!] You must specify a valid MTA-STS record "id" tag!' + Style.RESET_ALL)
+                json_data += '{"control_name":"MTA_STS","status":"fail","value":'+str(mta_value)+',"specified_tag":"id","details":"You must specify a valid MTA-STS record id tag!"}'
         else:
-            print(Fore.RED + '[!] You must specify a valid MTA-STS record "id" tag!' + Style.RESET_ALL)
-            json_data += '{"control_name":"MTA_STS","status":"fail","value":'+str(mta_value)+',"specified_tag":"id","details":"You must specify a valid MTA-STS record id tag!"}'
+            if re.search("v=sts", mta_value.lower()):
+                print(Fore.GREEN + '\n[+] Your MTA-STS record "v" tag is clearly configured' + Style.RESET_ALL)
+                json_data += '{"control_name":"MTA_STS","status":"pass","value":"'+str(mta_value)+'","specified_tag":"v","details":"Your MTA-STS record v tag is clearly configured"},'
+            else:
+                print(Fore.RED + '[!] You must specify a valid MTA-STS record "v" tag!' + Style.RESET_ALL)
+                json_data += '{"control_name":"MTA_STS","status":"fail","value":"'+str(mta_value)+'","specified_tag":"v","details":"You must specify a valid MTA-STS record v tag!"},'
+
+            if re.search("id=", mta_value.lower()):
+                print(Fore.GREEN + '[+] Your MTA-STS record "id" tag is clearly configured' + Style.RESET_ALL)
+                json_data += '{"control_name":"MTA_STS","status":"pass","value":"'+str(mta_value)+'","specified_tag":"id","details":"Your MTA-STS record id tag is clearly configured"}'
+            else:
+                print(Fore.RED + '[!] You must specify a valid MTA-STS record "id" tag!' + Style.RESET_ALL)
+                json_data += '{"control_name":"MTA_STS","status":"fail","value":"'+str(mta_value)+'","specified_tag":"id","details":"You must specify a valid MTA-STS record id tag!"}'
 
     def tls_control():
         global json_data
-        if re.search("v=tlsrpt", tls_value.lower()):
-            print(Fore.GREEN + '\n[+] Your TLS-RPT record "v" tag is clearly configured' + Style.RESET_ALL)
-            json_data += ',{"control_name":"TLS_RPT","status":"pass","value":'+str(tls_value)+',"specified_tag":"v","details":"Your TLS-RPT record v tag is clearly configured"}'
-        else:
-            print(Fore.RED + '[!] You must specify a valid TLS-RPT record "v" tag!' + Style.RESET_ALL)
-            json_data += ',{"control_name":"TLS_RPT","status":"fail","value":'+str(tls_value)+',"specified_tag":"v","details":"You must specify a valid TLS-RPT record v tag!"}'
+        if tls_value.startswith('"') and tls_value.endswith('"'):
+            if re.search("v=tlsrpt", tls_value.lower()):
+                print(Fore.GREEN + '\n[+] Your TLS-RPT record "v" tag is clearly configured' + Style.RESET_ALL)
+                json_data += ',{"control_name":"TLS_RPT","status":"pass","value":'+str(tls_value)+',"specified_tag":"v","details":"Your TLS-RPT record v tag is clearly configured"}'
+            else:
+                print(Fore.RED + '[!] You must specify a valid TLS-RPT record "v" tag!' + Style.RESET_ALL)
+                json_data += ',{"control_name":"TLS_RPT","status":"fail","value":'+str(tls_value)+',"specified_tag":"v","details":"You must specify a valid TLS-RPT record v tag!"}'
 
-        if re.search("rua=", tls_value.lower()):
-            print(Fore.GREEN + '[+] Your TLS-RPT record "rua" tag is clearly configured' + Style.RESET_ALL)
-            json_data += ',{"control_name":"TLS_RPT","status":"pass","value":'+str(tls_value)+',"specified_tag":"rua","details":"Your TLS-RPT record rua tag is clearly configured"}'
+            if re.search("rua=", tls_value.lower()):
+                print(Fore.GREEN + '[+] Your TLS-RPT record "rua" tag is clearly configured' + Style.RESET_ALL)
+                json_data += ',{"control_name":"TLS_RPT","status":"pass","value":'+str(tls_value)+',"specified_tag":"rua","details":"Your TLS-RPT record rua tag is clearly configured"}'
+            else:
+                print(Fore.RED + '[!] There is no "rua" tag in your TLS-RPT record. You must specify a valid "rua" tag!' + Style.RESET_ALL)
+                json_data += ',{"control_name":"TLS_RPT","status":"fail","value":'+str(tls_value)+',"specified_tag":"rua","details":"There is no rua tag in your TLS-RPT record. You must specify a valid rua tag!"}'
         else:
-            print(Fore.RED + '[!] There is no "rua" tag in your TLS-RPT record. You must specify a valid "rua" tag!' + Style.RESET_ALL)
-            json_data += ',{"control_name":"TLS_RPT","status":"fail","value":'+str(tls_value)+',"specified_tag":"rua","details":"There is no rua tag in your TLS-RPT record. You must specify a valid rua tag!"}'
+            if re.search("v=tlsrpt", tls_value.lower()):
+                print(Fore.GREEN + '\n[+] Your TLS-RPT record "v" tag is clearly configured' + Style.RESET_ALL)
+                json_data += ',{"control_name":"TLS_RPT","status":"pass","value":"'+str(tls_value)+'","specified_tag":"v","details":"Your TLS-RPT record v tag is clearly configured"}'
+            else:
+                print(Fore.RED + '[!] You must specify a valid TLS-RPT record "v" tag!' + Style.RESET_ALL)
+                json_data += ',{"control_name":"TLS_RPT","status":"fail","value":"'+str(tls_value)+'","specified_tag":"v","details":"You must specify a valid TLS-RPT record v tag!"}'
+
+            if re.search("rua=", tls_value.lower()):
+                print(Fore.GREEN + '[+] Your TLS-RPT record "rua" tag is clearly configured' + Style.RESET_ALL)
+                json_data += ',{"control_name":"TLS_RPT","status":"pass","value":"'+str(tls_value)+'","specified_tag":"rua","details":"Your TLS-RPT record rua tag is clearly configured"}'
+            else:
+                print(Fore.RED + '[!] There is no "rua" tag in your TLS-RPT record. You must specify a valid "rua" tag!' + Style.RESET_ALL)
+                json_data += ',{"control_name":"TLS_RPT","status":"fail","value":"'+str(tls_value)+'","specified_tag":"rua","details":"There is no rua tag in your TLS-RPT record. You must specify a valid rua tag!"}'
 
     def spf_control():
         global json_data
-        if spf_value.find('-all') != -1:
-            print(Fore.GREEN + "\n[+] Your SPF record well-configured" + Style.RESET_ALL)
-            json_data += ',{"control_name":"SPF_CHECK","status":"pass","value":'+str(spf_value)+',"details":"Your SPF record well-configured"}'
-        elif spf_value.find('~all') != -1:
-            print(Fore.YELLOW + "\n[*] Your SPF record has a softfail, you should check sub nodes for SPF" + Style.RESET_ALL)
-            json_data += ',{"control_name":"SPF_CHECK","status":"warning","value":'+str(spf_value)+',"details":"Your SPF record has a softfail, you should check sub nodes for SPF"}'
+        if spf_value.startswith('"') and spf_value.endswith('"'):
+            if spf_value.find('-all') != -1:
+                print(Fore.GREEN + "\n[+] Your SPF record well-configured" + Style.RESET_ALL)
+                json_data += ',{"control_name":"SPF_CHECK","status":"pass","value":'+str(spf_value)+',"details":"Your SPF record well-configured"}'
+            elif spf_value.find('~all') != -1:
+                print(Fore.YELLOW + "\n[*] Your SPF record has a softfail, you should check sub nodes for SPF" + Style.RESET_ALL)
+                json_data += ',{"control_name":"SPF_CHECK","status":"warning","value":'+str(spf_value)+',"details":"Your SPF record has a softfail, you should check sub nodes for SPF"}'
+            else:
+                print(Fore.RED + "\n[!] You must create SPF record or check sub nodes for SPF" + Style.RESET_ALL)
+                json_data += ',{"control_name":"SPF_CHECK","status":"fail","value":'+str(spf_value)+',"details":"You must create SPF record or check sub nodes for SPF"}'
         else:
-            print(Fore.RED + "\n[!] You must create SPF record or check sub nodes for SPF" + Style.RESET_ALL)
-            json_data += ',{"control_name":"SPF_CHECK","status":"fail","value":'+str(spf_value)+',"details":"You must create SPF record or check sub nodes for SPF"}'
+            if spf_value.find('-all') != -1:
+                print(Fore.GREEN + "\n[+] Your SPF record well-configured" + Style.RESET_ALL)
+                json_data += ',{"control_name":"SPF_CHECK","status":"pass","value":"'+str(spf_value)+'","details":"Your SPF record well-configured"}'
+            elif spf_value.find('~all') != -1:
+                print(Fore.YELLOW + "\n[*] Your SPF record has a softfail, you should check sub nodes for SPF" + Style.RESET_ALL)
+                json_data += ',{"control_name":"SPF_CHECK","status":"warning","value":"'+str(spf_value)+'","details":"Your SPF record has a softfail, you should check sub nodes for SPF"}'
+            else:
+                print(Fore.RED + "\n[!] You must create SPF record or check sub nodes for SPF" + Style.RESET_ALL)
+                json_data += ',{"control_name":"SPF_CHECK","status":"fail","value":"'+str(spf_value)+'","details":"You must create SPF record or check sub nodes for SPF"}'
 
     def dmarc_control():
         global json_data
-        if re.search("p=none", dmarc_value.lower()):
-            print(Fore.RED + '\n[!] Your email is vulnerable to email spoofing!' + Style.RESET_ALL)
-            print(Fore.RED + '[!] Your DMARC record "p" tag is set to "none". Spoofed emails can be send to your inbox. You should change it!' + Style.RESET_ALL)
-            json_data += ',{"control_name":"DMARC_CHECK","status":"fail","value":'+str(dmarc_value)+',"specified_tag":"p","details":"Your email is vulnerable to email spoofing! Your DMARC record p tag is set to none. Spoofed emails can be send to your inbox. You should change it!"}'
-        elif re.search("p=reject", dmarc_value.lower()):
-            print(Fore.GREEN + '\n[+] Your DMARC record "p" tag is clearly configured' + Style.RESET_ALL)
-            json_data += ',{"control_name":"DMARC_CHECK","status":"pass","value":'+str(dmarc_value)+',"specified_tag":"p","details":"Your DMARC record p tag is clearly configured"}'
-        elif re.search("p=quarantine", dmarc_value.lower()):
-            print(Fore.YELLOW + '\n[*] Your DMARC record "p" tag is set to "quarantine". Spoofed emails can be send to your spam box!' + Style.RESET_ALL)
-            json_data += ',{"control_name":"DMARC_CHECK","status":"warning","value":'+str(dmarc_value)+',"specified_tag":"p","details":"Your DMARC record p tag is set to quarantine. Spoofed emails can be send to your spam box!"}'
-        else:
-            print(Fore.RED + '\n[!] Your email is vulnerable to email spoofing!' + Style.RESET_ALL)
-            print(Fore.RED + '[!] There is no "p" tag in your DMARC record. Spoofed emails can be send to your inbox. You must specify a valid "p" tag!' + Style.RESET_ALL)
-            json_data += ',{"control_name":"DMARC_CHECK","status":"fail","value":'+str(dmarc_value)+',"specified_tag":"p","details":"Your email is vulnerable to email spoofing! There is no p tag in your DMARC record. Spoofed emails can be send to your inbox. You must specify a valid p tag!"}'
+        if dmarc_value.startswith('"') and dmarc_value.endswith('"'):    
+            if re.search("p=none", dmarc_value.lower()):
+                print(Fore.RED + '\n[!] Your email is vulnerable to email spoofing!' + Style.RESET_ALL)
+                print(Fore.RED + '[!] Your DMARC record "p" tag is set to "none". Spoofed emails can be send to your inbox. You should change it!' + Style.RESET_ALL)
+                json_data += ',{"control_name":"DMARC_CHECK","status":"fail","value":'+str(dmarc_value)+',"specified_tag":"p","details":"Your email is vulnerable to email spoofing! Your DMARC record p tag is set to none. Spoofed emails can be send to your inbox. You should change it!"}'
+            elif re.search("p=reject", dmarc_value.lower()):
+                print(Fore.GREEN + '\n[+] Your DMARC record "p" tag is clearly configured' + Style.RESET_ALL)
+                json_data += ',{"control_name":"DMARC_CHECK","status":"pass","value":'+str(dmarc_value)+',"specified_tag":"p","details":"Your DMARC record p tag is clearly configured"}'
+            elif re.search("p=quarantine", dmarc_value.lower()):
+                print(Fore.YELLOW + '\n[*] Your DMARC record "p" tag is set to "quarantine". Spoofed emails can be send to your spam box!' + Style.RESET_ALL)
+                json_data += ',{"control_name":"DMARC_CHECK","status":"warning","value":'+str(dmarc_value)+',"specified_tag":"p","details":"Your DMARC record p tag is set to quarantine. Spoofed emails can be send to your spam box!"}'
+            else:
+                print(Fore.RED + '\n[!] Your email is vulnerable to email spoofing!' + Style.RESET_ALL)
+                print(Fore.RED + '[!] There is no "p" tag in your DMARC record. Spoofed emails can be send to your inbox. You must specify a valid "p" tag!' + Style.RESET_ALL)
+                json_data += ',{"control_name":"DMARC_CHECK","status":"fail","value":'+str(dmarc_value)+',"specified_tag":"p","details":"Your email is vulnerable to email spoofing! There is no p tag in your DMARC record. Spoofed emails can be send to your inbox. You must specify a valid p tag!"}'
 
-        if re.search("v=dmarc", dmarc_value.lower()):
-            print(Fore.GREEN + '[+] Your DMARC record "v" tag is clearly configured' + Style.RESET_ALL)
-            json_data += ',{"control_name":"DMARC_CHECK","status":"pass","value":'+str(dmarc_value)+',"specified_tag":"v","details":"Your DMARC record v tag is clearly configured"}'
-        else:
-            print(Fore.RED + '[!] You must specify a valid DMARC record "v" tag!' + Style.RESET_ALL)
-            json_data += ',{"control_name":"DMARC_CHECK","status":"fail","value":'+str(dmarc_value)+',"specified_tag":"v","details":"You must specify a valid DMARC record v tag!"}'
+            if re.search("v=dmarc", dmarc_value.lower()):
+                print(Fore.GREEN + '[+] Your DMARC record "v" tag is clearly configured' + Style.RESET_ALL)
+                json_data += ',{"control_name":"DMARC_CHECK","status":"pass","value":'+str(dmarc_value)+',"specified_tag":"v","details":"Your DMARC record v tag is clearly configured"}'
+            else:
+                print(Fore.RED + '[!] You must specify a valid DMARC record "v" tag!' + Style.RESET_ALL)
+                json_data += ',{"control_name":"DMARC_CHECK","status":"fail","value":'+str(dmarc_value)+',"specified_tag":"v","details":"You must specify a valid DMARC record v tag!"}'
 
-        if re.search("rua=", dmarc_value.lower()):
-            print(Fore.GREEN + '[+] Your DMARC record "rua" tag is clearly configured' + Style.RESET_ALL)
-            json_data += ',{"control_name":"DMARC_CHECK","status":"pass","value":'+str(dmarc_value)+',"specified_tag":"rua","details":"Your DMARC record rua tag is clearly configured"}'
+            if re.search("rua=", dmarc_value.lower()):
+                print(Fore.GREEN + '[+] Your DMARC record "rua" tag is clearly configured' + Style.RESET_ALL)
+                json_data += ',{"control_name":"DMARC_CHECK","status":"pass","value":'+str(dmarc_value)+',"specified_tag":"rua","details":"Your DMARC record rua tag is clearly configured"}'
+            else:
+                print(Fore.RED + '[!] There is no "rua" tag in your DMARC record. You must specify a valid "rua" tag!' + Style.RESET_ALL)
+                json_data += ',{"control_name":"DMARC_CHECK","status":"fail","value":'+str(dmarc_value)+',"specified_tag":"rua","details":"There is no rua tag in your DMARC record. You must specify a valid rua tag!"}'
         else:
-            print(Fore.RED + '[!] There is no "rua" tag in your DMARC record. You must specify a valid "rua" tag!' + Style.RESET_ALL)
-            json_data += ',{"control_name":"DMARC_CHECK","status":"fail","value":'+str(dmarc_value)+',"specified_tag":"rua","details":"There is no rua tag in your DMARC record. You must specify a valid rua tag!"}'
+            if re.search("p=none", dmarc_value.lower()):
+                print(Fore.RED + '\n[!] Your email is vulnerable to email spoofing!' + Style.RESET_ALL)
+                print(Fore.RED + '[!] Your DMARC record "p" tag is set to "none". Spoofed emails can be send to your inbox. You should change it!' + Style.RESET_ALL)
+                json_data += ',{"control_name":"DMARC_CHECK","status":"fail","value":"'+str(dmarc_value)+'","specified_tag":"p","details":"Your email is vulnerable to email spoofing! Your DMARC record p tag is set to none. Spoofed emails can be send to your inbox. You should change it!"}'
+            elif re.search("p=reject", dmarc_value.lower()):
+                print(Fore.GREEN + '\n[+] Your DMARC record "p" tag is clearly configured' + Style.RESET_ALL)
+                json_data += ',{"control_name":"DMARC_CHECK","status":"pass","value":"'+str(dmarc_value)+'","specified_tag":"p","details":"Your DMARC record p tag is clearly configured"}'
+            elif re.search("p=quarantine", dmarc_value.lower()):
+                print(Fore.YELLOW + '\n[*] Your DMARC record "p" tag is set to "quarantine". Spoofed emails can be send to your spam box!' + Style.RESET_ALL)
+                json_data += ',{"control_name":"DMARC_CHECK","status":"warning","value":"'+str(dmarc_value)+'","specified_tag":"p","details":"Your DMARC record p tag is set to quarantine. Spoofed emails can be send to your spam box!"}'
+            else:
+                print(Fore.RED + '\n[!] Your email is vulnerable to email spoofing!' + Style.RESET_ALL)
+                print(Fore.RED + '[!] There is no "p" tag in your DMARC record. Spoofed emails can be send to your inbox. You must specify a valid "p" tag!' + Style.RESET_ALL)
+                json_data += ',{"control_name":"DMARC_CHECK","status":"fail","value":"'+str(dmarc_value)+'","specified_tag":"p","details":"Your email is vulnerable to email spoofing! There is no p tag in your DMARC record. Spoofed emails can be send to your inbox. You must specify a valid p tag!"}'
 
+            if re.search("v=dmarc", dmarc_value.lower()):
+                print(Fore.GREEN + '[+] Your DMARC record "v" tag is clearly configured' + Style.RESET_ALL)
+                json_data += ',{"control_name":"DMARC_CHECK","status":"pass","value":"'+str(dmarc_value)+'","specified_tag":"v","details":"Your DMARC record v tag is clearly configured"}'
+            else:
+                print(Fore.RED + '[!] You must specify a valid DMARC record "v" tag!' + Style.RESET_ALL)
+                json_data += ',{"control_name":"DMARC_CHECK","status":"fail","value":"'+str(dmarc_value)+'","specified_tag":"v","details":"You must specify a valid DMARC record v tag!"}'
+
+            if re.search("rua=", dmarc_value.lower()):
+                print(Fore.GREEN + '[+] Your DMARC record "rua" tag is clearly configured' + Style.RESET_ALL)
+                json_data += ',{"control_name":"DMARC_CHECK","status":"pass","value":"'+str(dmarc_value)+'","specified_tag":"rua","details":"Your DMARC record rua tag is clearly configured"}'
+            else:
+                print(Fore.RED + '[!] There is no "rua" tag in your DMARC record. You must specify a valid "rua" tag!' + Style.RESET_ALL)
+                json_data += ',{"control_name":"DMARC_CHECK","status":"fail","value":"'+str(dmarc_value)+'","specified_tag":"rua","details":"There is no rua tag in your DMARC record. You must specify a valid rua tag!"}'
+        
     def dkim_control():
         global json_data
-        if re.search("v=dkim", dkim_value.lower()):
-            print(Fore.GREEN + '\n[+] Your DKIM record "v" tag is clearly configured' + Style.RESET_ALL)
-            json_data += ',{"control_name":"DKIM_CHECK","status":"pass","value":'+str(dkim_value)+',"specified_tag":"v","details":"Your DKIM record v tag is clearly configured"}'
+        if dkim_value.startswith('"') and dmarc_value.endswith('"'):
+            if re.search("v=dkim", dkim_value.lower()):
+                print(Fore.GREEN + '\n[+] Your DKIM record "v" tag is clearly configured' + Style.RESET_ALL)
+                json_data += ',{"control_name":"DKIM_CHECK","status":"pass","value":'+str(dkim_value)+',"specified_tag":"v","details":"Your DKIM record v tag is clearly configured"}'
+            else:
+                print(Fore.RED + '[!] You must specify a valid DKIM record "v" tag!' + Style.RESET_ALL)
+                json_data += ',{"control_name":"DKIM_CHECK","status":"fail","value":'+str(dkim_value)+',"specified_tag":"v","details":"You must specify a valid DKIM record v tag!"}'
+            
+            if re.search("k=", dkim_value.lower()):
+                print(Fore.GREEN + '[+] Your DKIM record "k" tag is clearly configured' + Style.RESET_ALL)
+                json_data += ',{"control_name":"DKIM_CHECK","status":"pass","value":'+str(dkim_value)+',"specified_tag":"k","details":"Your DKIM record k tag is clearly configured"}'
+            else:
+                print(Fore.RED + '[!] There is no "k" tag in your DKIM record. You must specify a valid "k" tag!' + Style.RESET_ALL)
+                json_data += ',{"control_name":"DKIM_CHECK","status":"fail","value":'+str(dkim_value)+',"specified_tag":"k","details":"There is no k tag in your DKIM record. You must specify a valid k tag!"}'
+
+            if re.search("p=", dkim_value.lower()):
+                print(Fore.GREEN + '[+] Your DKIM record "p" tag is clearly configured' + Style.RESET_ALL)
+                json_data += ',{"control_name":"DKIM_CHECK","status":"pass","value":'+str(dkim_value)+',"specified_tag":"p","details":"Your DKIM record p tag is clearly configured"}'
+            else:
+                print(Fore.RED + '[!] There is no "p" tag in your DKIM record. You must specify a valid "p" tag!' + Style.RESET_ALL)
+                json_data += ',{"control_name":"DKIM_CHECK","status":"fail","value":'+str(dkim_value)+',"specified_tag":"p","details":"There is no p tag in your DKIM record. You must specify a valid p tag!"}'
         else:
-            print(Fore.RED + '[!] You must specify a valid DKIM record "v" tag!' + Style.RESET_ALL)
-            json_data += ',{"control_name":"DKIM_CHECK","status":"fail","value":'+str(dkim_value)+',"specified_tag":"v","details":"You must specify a valid DKIM record v tag!"}'
+            if re.search("v=dkim", dkim_value.lower()):
+                print(Fore.GREEN + '\n[+] Your DKIM record "v" tag is clearly configured' + Style.RESET_ALL)
+                json_data += ',{"control_name":"DKIM_CHECK","status":"pass","value":'+str(dkim_value)+',"specified_tag":"v","details":"Your DKIM record v tag is clearly configured"}'
+            else:
+                print(Fore.RED + '[!] You must specify a valid DKIM record "v" tag!' + Style.RESET_ALL)
+                json_data += ',{"control_name":"DKIM_CHECK","status":"fail","value":'+str(dkim_value)+',"specified_tag":"v","details":"You must specify a valid DKIM record v tag!"}'
+            
+            if re.search("k=", dkim_value.lower()):
+                print(Fore.GREEN + '[+] Your DKIM record "k" tag is clearly configured' + Style.RESET_ALL)
+                json_data += ',{"control_name":"DKIM_CHECK","status":"pass","value":'+str(dkim_value)+',"specified_tag":"k","details":"Your DKIM record k tag is clearly configured"}'
+            else:
+                print(Fore.RED + '[!] There is no "k" tag in your DKIM record. You must specify a valid "k" tag!' + Style.RESET_ALL)
+                json_data += ',{"control_name":"DKIM_CHECK","status":"fail","value":'+str(dkim_value)+',"specified_tag":"k","details":"There is no k tag in your DKIM record. You must specify a valid k tag!"}'
+
+            if re.search("p=", dkim_value.lower()):
+                print(Fore.GREEN + '[+] Your DKIM record "p" tag is clearly configured' + Style.RESET_ALL)
+                json_data += ',{"control_name":"DKIM_CHECK","status":"pass","value":'+str(dkim_value)+',"specified_tag":"p","details":"Your DKIM record p tag is clearly configured"}'
+            else:
+                print(Fore.RED + '[!] There is no "p" tag in your DKIM record. You must specify a valid "p" tag!' + Style.RESET_ALL)
+                json_data += ',{"control_name":"DKIM_CHECK","status":"fail","value":'+str(dkim_value)+',"specified_tag":"p","details":"There is no p tag in your DKIM record. You must specify a valid p tag!"}'
         
-        if re.search("k=", dkim_value.lower()):
-            print(Fore.GREEN + '[+] Your DKIM record "k" tag is clearly configured' + Style.RESET_ALL)
-            json_data += ',{"control_name":"DKIM_CHECK","status":"pass","value":'+str(dkim_value)+',"specified_tag":"k","details":"Your DKIM record k tag is clearly configured"}'
-        else:
-            print(Fore.RED + '[!] There is no "k" tag in your DKIM record. You must specify a valid "k" tag!' + Style.RESET_ALL)
-            json_data += ',{"control_name":"DKIM_CHECK","status":"fail","value":'+str(dkim_value)+',"specified_tag":"k","details":"There is no k tag in your DKIM record. You must specify a valid k tag!"}'
-
-        if re.search("p=", dkim_value.lower()):
-            print(Fore.GREEN + '[+] Your DKIM record "p" tag is clearly configured' + Style.RESET_ALL)
-            json_data += ',{"control_name":"DKIM_CHECK","status":"pass","value":'+str(dkim_value)+',"specified_tag":"p","details":"Your DKIM record p tag is clearly configured"}'
-        else:
-            print(Fore.RED + '[!] There is no "p" tag in your DKIM record. You must specify a valid "p" tag!' + Style.RESET_ALL)
-            json_data += ',{"control_name":"DKIM_CHECK","status":"fail","value":'+str(dkim_value)+',"specified_tag":"p","details":"There is no p tag in your DKIM record. You must specify a valid p tag!"}'
-
     def convert():
         xslt_doc = etree.parse("./stylesheet.xslt")
         xslt_transformer = etree.XSLT(xslt_doc)
@@ -589,10 +773,10 @@ except:
 
     if args.domain:
         run_commands()
-        json_object = json.loads(json_data)
-        json_formatted_str = json.dumps(json_object, indent=2)
 
         if args.output:
+            json_object = json.loads(json_data)
+            json_formatted_str = json.dumps(json_object, indent=2)
             with open(args.output, "w") as outfile:
                 outfile.write(json_formatted_str)
 
