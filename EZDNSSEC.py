@@ -41,6 +41,10 @@ if args.domain:
         mx_value = str(subprocess.getoutput("dig +short MX " + args.domain + " | sort --numeric-sort"))
         # Extract individual MX servers from the dig output
         mx_list = re.findall(r"\S+\w+\.\w\w\w\b", mx_value)
+        # Use dig command to fetch A, SOA, NS records for the given domain
+        a_value =  str(subprocess.getoutput("dig +short A " + args.domain))
+        ns_value = str(subprocess.getoutput("dig +short NS " + args.domain))
+        soa_value = str(subprocess.getoutput("dig +short SOA " + args.domain))
         # Fetch MTA-STS, TLS-RPT, SPF, DMARC, and DKIM records for the domain
         mta_value = str(subprocess.getoutput("dig +short TXT _mta-sts." + args.domain))
         tls_value = str(subprocess.getoutput("dig +short TXT _smtp._tls." + args.domain))
@@ -67,6 +71,24 @@ def convert():
 
 def run_commands(mx_list,json_data):
         #global json_data
+        
+        # Print a separator line for better output readability
+        print(Fore.MAGENTA + "-----------------------------------------" + Style.RESET_ALL)
+        # Print A Records
+        print(Fore.BLUE + "[+] A Records" + Style.RESET_ALL)
+        print(a_value)
+        
+        # Print a separator line for better output readability
+        print(Fore.MAGENTA + "-----------------------------------------" + Style.RESET_ALL)
+        # Print NS Records
+        print(Fore.BLUE + "[+] NS Records" + Style.RESET_ALL)
+        print(ns_value)
+        
+        # Print a separator line for better output readability
+        print(Fore.MAGENTA + "-----------------------------------------" + Style.RESET_ALL)
+        # Print SOA Records
+        print(Fore.BLUE + "[+] SOA Records" + Style.RESET_ALL)
+        print(soa_value)
         
         # Print a separator line for better output readability
         print(Fore.MAGENTA + "-----------------------------------------" + Style.RESET_ALL)
