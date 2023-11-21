@@ -79,7 +79,7 @@ def starttls_control(mx_list, json_data):
             for mx_server in mx_list:
                 count += 1
                 # Connect to the mail server
-                server = smtplib.SMTP(i, 25)
+                server = smtplib.SMTP(mx_server, 25)
                 
                 # Attempt to start TLS
                 starttls_list.append(str(server.starttls()))
