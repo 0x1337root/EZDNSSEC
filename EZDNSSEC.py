@@ -24,13 +24,13 @@ parser.add_argument('-o', '--output', dest='output', type=str, help='Output to a
 args = parser.parse_args()
 
 # Print ASCII art using colorama and pyfiglet
-try:
-    custom_fig = Figlet(font='epic')
-    print()
-    print(Fore.RED + Style.BRIGHT + custom_fig.renderText('EZDNSSEC') + Style.RESET_ALL)
-except:
+#try:
+    #custom_fig = Figlet(font='epic')
+    #print()
+    #print(Fore.RED + Style.BRIGHT + custom_fig.renderText('EZDNSSEC') + Style.RESET_ALL)
+#except:
     # Incase of the errors while printing ASCII art 
-    print(f"Error occurred while printing ASCII art: {ascii_error}")
+    #print(f"Error occurred while printing ASCII art: {ascii_error}")
 
 # Initialize a JSON string with an opening square bracket
 json_data = '['
