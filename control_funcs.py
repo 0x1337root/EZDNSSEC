@@ -7,52 +7,48 @@ from pyfiglet import Figlet
 from lxml import etree
 
 # Function to control SMTP open relay
-def smtp_open_relay_control(mx_list,args, json_data):
-    
-            # Define sender and receiver addresses for testing SMTP open relay
-            sender = ["ezdnssec@protonmail.com", "ezdnssec@protonmail.com", "ezdnssec@" + args.domain]
-            receiver = ["ezndssec@protonmail.com", "ezdnssec@" + args.domain, "ezdnssec@" + args.domain]
+def smtp_open_relay_control(mx_list, args, json_data):
+        # Define sender and receiver addresses for testing SMTP open relay
+        sender = ["ezdnssec@protonmail.com", "ezdnssec@protonmail.com", "ezdnssec@" + args.domain]
+        receiver = ["ezndssec@protonmail.com", "ezdnssec@" + args.domain, "ezdnssec@" + args.domain]
 
-            # Define a function to test open relay on a specific mail server
-            def test_relay(mx_server, sender, receiver):
-                try:
-                    # Attempt to establish a connection to the SMTP server
-                    smtpObj = smtplib.SMTP(str(mx_server), 25)
-                    
-                    # Iterate over sender and receiver pairs for testing
-                    for j in range(3):
-                    
-                        # Compose a test email message
-                        message = f"""From: From Person <{sender[j]}>
-                        To: To Person <{receiver[j]}>
+        # Define a function to test open relay on a specific mail server
+        def test_relay(mx_server, sender, receiver, j):
+            try:
+                # Attempt to establish a connection to the SMTP server
+                smtpObj = smtplib.SMTP(str(mx_server), 25)
+
+                # Compose a test email message
+                message = f"""From: From Person <{sender}>
+                        To: To Person <{receiver}>
                         Subject: SMTP open relay test
                         This is a test e-mail message.
                         """
-                        # Send the test email
-                        smtpObj.sendmail(sender[j], receiver[j], message)
-                        # Check for vulnerability based on the test 
-                        if j == 0:
-                            print(mx_server + Fore.RED + f"      [!] This mail server is vulnerable to SMTP Open Relay! (from external source to external destination)" + Style.RESET_ALL)
-                            json_data += '{"control_name":"OPEN_RELAY_CHECK","status":"fail","details":"This mail server is vulnerable to SMTP Open Relay! (from external source to external destination)"},'
-                        else:
-                            print(mx_server + Fore.RED + f"      [!] This mail server is vulnerable to SMTP Open Relay! (from {'external' if j == 1 else 'internal'} source to {'internal' if j == 2 else 'external'} destination)" + Style.RESET_ALL)
-                            json_data += f'{{"control_name":"OPEN_RELAY_CHECK","status":"fail","details":"This mail server is vulnerable to SMTP Open Relay! (from {"external" if j == 1 else "internal"} source to {"internal" if j == 2 else "external"} destination)"}},'
+                # Send the test email
+                smtpObj.sendmail(sender, receiver, message)
 
-                except Exception as e:
-                
+                # Check for vulnerability based on the test
+                if j == 0:
+                    print(mx_server + Fore.RED + f"      [!] This mail server is vulnerable to SMTP Open Relay! (from external source to external destination)" + Style.RESET_ALL)
+                    json_data += '{"control_name":"OPEN_RELAY_CHECK","status":"fail","details":"This mail server is vulnerable to SMTP Open Relay! (from external source to external destination)"},'
+                else:
+                    print(mx_server + Fore.RED + f"      [!] This mail server is vulnerable to SMTP Open Relay! (from {'external' if j == 1 else 'internal'} source to {'internal' if j == 2 else 'external'} destination)" +  Style.RESET_ALL)
+                    json_data += f'{{"control_name":"OPEN_RELAY_CHECK","status":"fail","details":"This mail server is vulnerable to SMTP Open Relay! (from {"external" if j == 1 else "internal"} source to {"internal" if j == 2 else "external"} destination)"}},'
+
+            except Exception as e:
                 # Handle exceptions (mail server is not vulnerable)
-                    for j in range(3):
-                        if j == 0:
-                            print(mx_server + Fore.GREEN + f"      [+] This mail server is not vulnerable to SMTP Open Relay! (from external source to {'external' if j == 1 else 'internal'} destination)" + Style.RESET_ALL)
-                            json_data += f'{{"control_name":"OPEN_RELAY_CHECK","status":"pass","details":"This mail server is not vulnerable to SMTP Open Relay! (from external source to {"external" if j == 1 else "internal"} destination)"}},'
-                        else:
-                            print(mx_server + Fore.GREEN + f"      [+] This mail server is not vulnerable to SMTP Open Relay! (from {'external' if j == 1 else 'internal'} source to {'internal' if j == 2 else 'external'} destination)" + Style.RESET_ALL)
-                            json_data += f'{{"control_name":"OPEN_RELAY_CHECK","status":"pass","details":"This mail server is not vulnerable to SMTP Open Relay! (from {"external" if j == 1 else "internal"} source to {"internal" if j == 2 else "external"} destination)"}},'
+                if j == 0:
+                    print(mx_server + Fore.GREEN + f"      [+] This mail server is not vulnerable to SMTP Open Relay! (from external source to {'external' if j == 1 else 'internal'} destination)" + Style.RESET_ALL)
+                    json_data += f'{{"control_name":"OPEN_RELAY_CHECK","status":"pass","details":"This mail server is not vulnerable to SMTP Open Relay! (from external source to {"external" if j == 1 else "internal"} destination)"}},'
+                else:
+                    print(mx_server + Fore.GREEN + f"      [+] This mail server is not vulnerable to SMTP Open Relay! (from {'external' if j == 1 else 'internal'} source to {'internal' if j == 2 else 'external'} destination)" + Style.RESET_ALL)
+                    json_data += f'{{"control_name":"OPEN_RELAY_CHECK","status":"pass","details":"This mail server is not vulnerable to SMTP Open Relay! (from {"external" if j == 1 else "internal"} source to {"internal" if j == 2 else "external"} destination)"}},'
 
-            # Use ThreadPoolExecutor for concurrent testing of multiple servers
-            with concurrent.futures.ThreadPoolExecutor() as executor:
-                executor.map(test_relay, mx_list, [sender] * len(mx_list), [receiver] * len(mx_list))
-
+        # Use ThreadPoolExecutor for concurrent testing of multiple servers
+        with concurrent.futures.ThreadPoolExecutor() as executor:
+            for mx_server in mx_list:
+                for j in range(3):
+                    executor.submit(test_relay, mx_server, sender[j], receiver[j], j)
 
 
 # Function to check mail server list
