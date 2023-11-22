@@ -52,6 +52,14 @@ if args.domain:
         spf_value = str(subprocess.getoutput("dig +short TXT " + args.domain + " | grep -i 'v=spf'"))
         dmarc_value = str(subprocess.getoutput("dig +short TXT _dmarc." + args.domain))
         dkim_value = str(subprocess.getoutput("dig +short TXT " + str(args.selector) + "._domainkey." + args.domain))
+        ssl_signature = str(subprocess.getoutput("timeout 1 openssl s_client -connect " + args.domain + ":443 2>/dev/null | openssl x509 -noout -text | grep -i 'Signature Algorithm' -m 1")).strip()
+        ssl_issuer = str(subprocess.getoutput("timeout 1 openssl s_client -connect " + args.domain + ":443 2>/dev/null | openssl x509 -noout -issuer | grep -i 'issuer' -m 1")).strip()
+        ssl_subject = str(subprocess.getoutput("timeout 1 openssl s_client -connect " + args.domain + ":443 2>/dev/null | openssl x509 -noout -subject | grep -i 'subject' -m 1")).strip()
+        #tls_versions = str(subprocess.getoutput("nmap -sV --script ssl-enum-ciphers -p 443 " + args.domain + " | grep -i 'tls:'")).strip()
+        ssl_dates = str(subprocess.getoutput("timeout 1 openssl s_client -connect " + args.domain + ":443 2>/dev/null | openssl x509 -noout -dates")).strip()
+        expiration_date = str(subprocess.getoutput("timeout 1 openssl s_client -connect " + args.domain + ":443 2>/dev/null | openssl x509 -noout -dates | grep 'notAfter'|sed 's/notAfter=//'")).strip()
+        today = str(subprocess.getoutput("date +%F"))
+        expiration_time = str(subprocess.getoutput("echo $(( ( $(date -ud '" + expiration_date + "' +'%s') - $(date -ud '" + today + "' +'%s') )/60/60/24 )) days"))
 
 
 def convert():
@@ -72,6 +80,16 @@ def convert():
 
 def run_commands(mx_list,json_data):
         #global json_data
+        
+        # Print a separator line for better output readability
+        print(Fore.MAGENTA + "-----------------------------------------" + Style.RESET_ALL)
+        # Print A Records
+        print(Fore.BLUE + "[+] SSL Certificate Details" + Style.RESET_ALL)
+        print(ssl_signature)
+        print(ssl_issuer)
+        print(ssl_subject)
+        #print(tls_versions)
+        print(ssl_dates + " - (" + expiration_time + ")")
         
         # Print a separator line for better output readability
         print(Fore.MAGENTA + "-----------------------------------------" + Style.RESET_ALL)
